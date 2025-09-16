@@ -1,13 +1,14 @@
-import { CanvasProvider } from './component/canvas/CanvasProvider';
-import CanvasControl from './component/canvas/CanvasControl';
-import ImageDrawer from './component/canvas/ImageDrawer';
+import Content from './component/content/Content';
+import Header from './component/header/Header';
+import './App.css';
+
 
 function App() {
   return (
-    <CanvasProvider>
-      <CanvasControl/>
-      <ImageDrawer/>
-    </CanvasProvider>
+    <main id='main'>
+      <Header/>
+      <Content/>
+    </main>
   );
 }
 
