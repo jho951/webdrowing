@@ -1,14 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
+import ToolStore from '../slice/toolSlice';
 
-const store = configureStore({
+export const store = configureStore({
   reducer: {
-    tool, view, docs, section   
+    tool: ToolStore.reducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
-    serializableCheck: {ignoredPaths:['docs.strokes','docs.redoStack','docs.undoStack']},
-    ignoredPaths:['payload.points']
-  }),
-  devTools: process.env.NODE_ENV !== 'production',
 });
-
-export default store;

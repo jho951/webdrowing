@@ -3,11 +3,9 @@
  * @description: 그리기 색상 테마
  * @author: YJH
  */
-const DRAW_TYPE ={
-  brush:"BRUSH",
-  eraser:"ERASER",
-  area:"AREA",
-  text:"TEXT",
-}
+export const DRAW_TYPE = [{ value: "brush", label: "브러시" },
+    { value: "eraser", label: "지우개" },
+    { value: "text", label: "텍스트" },
+    { value: "select", label: "선택" }];
 
-export { DRAW_TYPE}
+
