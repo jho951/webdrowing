@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import drawUtils from "../util/DrawUtil";
-
+import { DRAW_THEME } from "../../constant/drawTheme";
+import './canvasDrawing.css';
 
 function CanvasDrawing () {
   const canvasRef = useRef(null);
@@ -30,7 +31,8 @@ function CanvasDrawing () {
         y: startPos.y,
         width: x - startPos.x,
         height: y - startPos.y,
-        strokeStyle: "black",
+        strokeStyle: DRAW_THEME.red,
+        lineWidth: 2,
       });
     };
 
@@ -51,7 +53,7 @@ function CanvasDrawing () {
     };
   }, [isDrawing, startPos]);
 
-  return <canvas ref={canvasRef} width={500} height={500} style={{ border: "1px solid black" }} />;
+  return <canvas className="canvas-wrap" ref={canvasRef} width={500} height={500}/>;
 };
 
 export default CanvasDrawing;

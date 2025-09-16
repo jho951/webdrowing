@@ -1,10 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-
 const store = configureStore({
   reducer: {
-    // Todo... 리듀서 생성
-  }
+    tool, view, docs, section   
+  },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+    serializableCheck: {ignoredPaths:['docs.strokes','docs.redoStack','docs.undoStack']},
+    ignoredPaths:['payload.points']
+  }),
+  devTools: process.env.NODE_ENV !== 'production',
 });
 
 export default store;
