@@ -1,6 +1,7 @@
 import TOOL_BUTTON from '../../constant/toolButton';
 
 const Header = () => {
+  // Todo... 리덕스 상태관리
   return (
     <header>
       <nav>
