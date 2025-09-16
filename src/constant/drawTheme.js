@@ -1,4 +1,4 @@
-const THEME ={
+const DRAW_THEME ={
   black:"#000000",
   white:"#FFFFFF",
   red:"#FF0000",
@@ -7,5 +7,4 @@ const THEME ={
   yellow:"#FFFF00",
 }
 
-
-export { THEME}
+export default DRAW_THEME;

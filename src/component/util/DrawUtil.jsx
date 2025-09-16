@@ -1,6 +1,3 @@
-import { THEME } from "../../constant/Theme";
-
-
 const drawUtils = (ctx) => {
   return {
     clear: (x = 0, y = 0, w = ctx.canvas.width, h = ctx.canvas.height) => {
@@ -35,7 +32,7 @@ const drawUtils = (ctx) => {
       }
     },
 
-    line: ({ x1, y1, x2, y2, strokeStyle = THEME.black, lineWidth = 1 }) => {
+    line: ({ x1, y1, x2, y2, strokeStyle, lineWidth = 1 }) => {
       ctx.beginPath();
       ctx.moveTo(x1, y1);
       ctx.lineTo(x2, y2);

@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import drawUtils from "../util/DrawUtil";
+import DRAW_THEME from "../../constant/drawTheme";
 
 
 function CanvasDrawing () {
@@ -25,12 +26,12 @@ function CanvasDrawing () {
       
     
       draw.clear();
-      draw.rect({
+      draw.line({
         x: startPos.x,
         y: startPos.y,
         width: x - startPos.x,
         height: y - startPos.y,
-        strokeStyle: "black",
+        strokeStyle:  DRAW_THEME.black,
       });
     };
 
