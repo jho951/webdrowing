@@ -1,7 +1,7 @@
 const EraserTool = {
-  begin(ctx, p, style) {
+  begin(ctx, p) {
+    ctx.save();
     ctx.globalCompositeOperation = 'destination-out';
-    ctx.lineWidth = style.width ?? 20;
     ctx.beginPath();
     ctx.moveTo(p.x, p.y);
   },
@@ -9,7 +9,9 @@ const EraserTool = {
     ctx.lineTo(p.x, p.y);
     ctx.stroke();
   },
-  end(ctx) {},
+  end(ctx) {
+    ctx.restore();
+  },
 };
 
 export { EraserTool };

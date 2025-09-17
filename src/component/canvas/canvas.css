@@ -1,24 +1,17 @@
 .canvas-container {
   position: relative;
-  background-color: var(--background-color);
-  overflow: hidden;
-  box-shadow: var(--box-shadow);
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
   margin: 5px;
 }
 
-.canvas-wrap {
-  display: block;
-}
-
-.resize-handle {
+.resize-handle.bottom-right {
   position: absolute;
-  width: 15px;
-  height: 15px;
-  background-color: var(--primary-color);
+  right: 0;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
   cursor: se-resize;
-}
-
-.bottom-right {
-  bottom: -7.5px;
-  right: -7.5px;
+  border-top-left-radius: 4px;
 }

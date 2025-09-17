@@ -1,124 +1,84 @@
 /**
  * @file Canvas.jsx
  * @author YJH
- * @descrition 대시보드 내 상호작용 컴포넌트
+ * v1: 고정 크기 캔버스, 도형 클릭 시 중앙에 즉시 렌더
  */
-import { useRef, useState, useEffect } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import { selectActiveTool } from '../../redux/slice/drawSlice';
+import { selectStyle } from '../../redux/slice/styleSlice';
+
+import DefaultState from '../../constant';
 import { useCanvasDraw } from '../../hook/useCanvasDraw';
-import ToolStore from '../../redux/slice/toolSlice';
-import { DEFAULT_SIZE } from '../../constant/defaultSize';
+
+import { getTool } from '../../tools';
 import './canvas.css';
 
-const getInitialSize = () => {
-  const savedWidth = localStorage.getItem('canvasWidth');
-  const savedHeight = localStorage.getItem('canvasHeight');
-  return {
-    width: savedWidth ? parseInt(savedWidth, 10) : DEFAULT_SIZE.width,
-    height: savedHeight ? parseInt(savedHeight, 10) : DEFAULT_SIZE.height,
-  };
-};
+const { SIZE } = DefaultState;
 
 function Canvas() {
-  const tool = useSelector(ToolStore.selectors.selectActiveTool);
-  const style = useSelector(ToolStore.selectors.selectToolStyle);
+  const tool = useSelector(selectActiveTool);
+  const style = useSelector(selectStyle);
+
   const canvasRef = useRef(null);
-  const containerRef = useRef(null);
-  const isResizingRef = useRef(false);
-  const startPosRef = useRef({ x: 0, y: 0 });
-  const [size, setSize] = useState(getInitialSize);
+  const dpr = useMemo(
+    () => (typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1),
+    []
+  );
 
-  // const saveCanvasState = () => {
-  //   const canvas = canvasRef.current;
-  //   if (canvas) {
-  //     const dataURL = canvas.toDataURL();
-  //     localStorage.setItem('canvasDrawing', dataURL);
-  //   }
-  // };
-
+  // 백킹 스토어 = CSS × DPR, 좌표계는 setTransform으로 CSS px 기준
   useEffect(() => {
-    localStorage.setItem('canvasWidth', size.width);
-    localStorage.setItem('canvasHeight', size.height);
     const canvas = canvasRef.current;
     if (!canvas) return;
-    // const ctx = canvas.getContext('2d');
-    // const savedDrawing = localStorage.getItem('canvasDrawing');
+    canvas.width = Math.round(SIZE.width * dpr);
+    canvas.height = Math.round(SIZE.height * dpr);
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }, [dpr]);
 
-    // if (savedDrawing) {
-    //   const img = new Image();
-    //   img.src = savedDrawing;
-    //   img.onload = () => {
-    //     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    //     ctx.drawImage(img, 0, 0, size.width, size.height);
-    //   };
-    // }
-  }, [size]);
+  // 브러시/지우개 드로잉 핸들러
+  const handlers = useCanvasDraw(canvasRef, { tool, style });
 
-  const handleMouseDown = (e) => {
-    e.stopPropagation();
-    isResizingRef.current = true;
-    startPosRef.current = {
-      x: e.clientX,
-      y: e.clientY,
+  // ★ 도형 즉시 렌더 핸들러(툴바에서 호출)
+  useEffect(() => {
+    window.__insertShape = (shapeName) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // 현재 스타일 적용(도형도 브러시와 동일 스타일로)
+      ctx.strokeStyle = style.color ?? '#000000';
+      ctx.lineWidth = typeof style.width === 'number' ? style.width : 5;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      const center = { x: canvas.clientWidth / 2, y: canvas.clientHeight / 2 };
+      const shapeTool = getTool(shapeName);
+      shapeTool.begin(ctx, center); // one-shot: begin에서 그려지고 끝
+      shapeTool.end?.(ctx);
     };
-    // saveCanvasState();
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
-  };
 
-  const handleMouseMove = (e) => {
-    if (!isResizingRef.current) return;
-    const currentWidth = containerRef.current.clientWidth;
-    const currentHeight = containerRef.current.clientHeight;
-    const deltaX = e.clientX - startPosRef.current.x;
-    const deltaY = e.clientY - startPosRef.current.y;
-    const newWidth = currentWidth + deltaX;
-    const newHeight = currentHeight + deltaY;
-    if (newWidth > 100 && newHeight > 100) {
-      setSize({
-        width: newWidth,
-        height: newHeight,
-      });
-      startPosRef.current = { x: e.clientX, y: e.clientY };
-    }
-  };
-
-  const handleMouseUp = () => {
-    isResizingRef.current = false;
-    window.removeEventListener('mousemove', handleMouseMove);
-    window.removeEventListener('mouseup', handleMouseUp);
-    // saveCanvasState();
-  };
-
-  const handlers = useCanvasDraw(canvasRef, {
-    width: window.innerWidth,
-    height: window.innerHeight,
-    tool,
-    style,
-  });
+    return () => {
+      delete window.__insertShape;
+    };
+  }, [style]);
 
   return (
     <section
-      ref={containerRef}
       className="canvas-container"
-      style={{
-        width: size.width,
-        height: size.height,
-      }}
+      style={{ width: `${SIZE.width}px`, height: `${SIZE.height}px` }}
     >
       <canvas
-        className="canvas-wrap"
-        width={500}
-        height={500}
         ref={canvasRef}
+        className="canvas-wrap"
+        style={{ width: '100%', height: '100%', touchAction: 'none' }}
         onPointerDown={handlers.onPointerDown}
         onPointerMove={handlers.onPointerMove}
         onPointerUp={handlers.onPointerUp}
         onPointerLeave={handlers.onPointerLeave}
-      />
-      <div
-        className="resize-handle bottom-right"
-        onMouseDown={handleMouseDown}
+        onPointerCancel={handlers.onPointerCancel}
+        onContextMenu={(e) => e.preventDefault()}
       />
     </section>
   );

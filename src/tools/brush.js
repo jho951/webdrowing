@@ -1,10 +1,7 @@
-import DRAW_THEME from "../constant/drawTheme";
-
 const BrushTool = {
-  begin(ctx, p, style) {
+  begin(ctx, p) {
+    ctx.save();
     ctx.globalCompositeOperation = 'source-over';
-    ctx.strokeStyle = style.color ?? DRAW_THEME.black;
-    ctx.lineWidth = style.width ?? 5;
     ctx.beginPath();
     ctx.moveTo(p.x, p.y);
   },
@@ -13,7 +10,7 @@ const BrushTool = {
     ctx.stroke();
   },
   end(ctx) {
-    // 필요시 마무리 처리
+    ctx.restore();
   },
 };
 

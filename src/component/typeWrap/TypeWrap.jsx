@@ -1,26 +1,23 @@
-import { useState } from 'react';
+// TypeWrap.jsx
 import './typeWrap.css';
 
-const TypeWrap = ({ list, category = '', onClick }) => {
-  const [isActive, setIsActive] = useState('');
-  const onChangeActiveeState = (e) => {
-    console.log(e);
-    onClick(e);
-    setIsActive(e);
-  };
-
+const TypeWrap = ({ list, category = '', value, onChange }) => {
   return (
-    <section className="type-container">
-      {list.map((ele) => (
-        <button
-          className={`${isActive === ele.value && 'active'} type-btn`}
-          onClick={() => onChangeActiveeState(ele.value)}
-          key={ele.value}
-          type="button"
-        >
-          {ele.label}
-        </button>
-      ))}
+    <section className="type-container" role="group" aria-label={category}>
+      {list.map((ele) => {
+        const active = value === ele.value;
+        return (
+          <button
+            key={ele.value}
+            type="button"
+            className={`type-btn ${active ? 'active' : ''}`}
+            aria-pressed={active}
+            onClick={() => onChange?.(ele.value)}
+          >
+            {ele.label}
+          </button>
+        );
+      })}
       <span className="type-label">{category}</span>
     </section>
   );

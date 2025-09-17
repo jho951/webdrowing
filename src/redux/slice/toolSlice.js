@@ -1,74 +1,20 @@
-/**
- * @file toolSlice.js
- * @description Tool 상태 슬라이스. defaultState의 단일 export(DefaultState)를 기반으로 구성하며,
- *              이 모듈 또한 단일 export(default)로 actions/selectors/reducer를 묶어 제공합니다.
- */
-
+// src/redux/slice/toolSlice.js
 import { createSlice } from '@reduxjs/toolkit';
-import DefaultState from '../../constant/defaultState';
+import DefaultState from '../../constant'; // index.js에서 DRAW/STYLE/... 단일 export
+const { DRAW } = DefaultState;
 
-const { DRAW_DEFAULT, makeInitialToolState } = DefaultState;
+// Redux state 안에서 불변 상수(Object.freeze) 참조 충돌을 피하려면 얕은 복제 권장
+const initialState = {
+  tools: DRAW.allowed.tool.map(({ value, label }) => ({ value, label })),
+  shapes: DRAW.allowed.shape.map(({ value, label }) => ({ value, label })),
+};
 
-// 초기 상태
-const initialState = makeInitialToolState();
-
-// 슬라이스
 const toolSlice = createSlice({
-  name: 'tool',
+  name: 'toolRegistry',
   initialState,
-  reducers: {
-    setTool(state, action) {
-      const v = action.payload;
-      if (DRAW_DEFAULT.TOOL.ALLOWED.includes(v)) state.activeTool = v;
-    },
-    setColor(state, action) {
-      state.style.color = action.payload;
-    },
-    setWidth(state, action) {
-      state.style.width = action.payload;
-    },
-    setStyle(state, action) {
-      Object.assign(state.style, action.payload || {});
-    },
-    setCoordMode(state, action) {
-      state.coordMode = action.payload;
-    },
-    resetToolState() {
-      return makeInitialToolState();
-    },
-  },
+  reducers: {},
 });
 
-// 액션
-const { setTool, setColor, setWidth, setStyle, setCoordMode, resetToolState } =
-  toolSlice.actions;
-
-// 셀렉터
-const selectActiveTool = (st) => st.tool.activeTool;
-const selectToolStyle = (st) => st.tool.style;
-
-// 리듀서
-const reducer = toolSlice.reducer;
-
-/**
- * 단일 default export:
- * - actions: 액션 크리에이터 묶음
- * - selectors: 셀렉터 묶음
- * - reducer: 리듀서
- * - slice: createSlice 결과(필요 시 사용)
- */
-const ToolStore = Object.freeze({
-  actions: {
-    setTool,
-    setColor,
-    setWidth,
-    setStyle,
-    setCoordMode,
-    resetToolState,
-  },
-  selectors: { selectActiveTool, selectToolStyle },
-  reducer,
-  slice: toolSlice,
-});
-
-export default ToolStore;
+export const selectAllowedTools = (st) => st.toolRegistry.tools;
+export const selectAllowedShapes = (st) => st.toolRegistry.shapes;
+export default toolSlice.reducer;

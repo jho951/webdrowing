@@ -1,24 +1,33 @@
-import { useDispatch } from 'react-redux';
-
-import { DRAW_TYPE, SHAPE_TYPE } from '../../constant/drawType';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { selectActiveTool, setTool } from '../../redux/slice/drawSlice';
 import TypeWrap from '../typeWrap/TypeWrap';
 import FileInput from '../fileInput/FileInput';
-import ToolStore from '../../redux/slice/toolSlice';
-
+import { DRAW } from '../../constant/draw';
 import './toolBar.css';
+import {
+  selectAllowedShapes,
+  selectAllowedTools,
+} from '../../redux/slice/toolSlice';
 
 const ToolBar = () => {
   const dispatch = useDispatch();
+  const activeTool = useSelector(selectActiveTool);
+  const tools = useSelector(selectAllowedTools);
+  const shapes = useSelector(selectAllowedShapes);
 
   return (
     <nav id="header" className="drawer-toolbar">
       <TypeWrap
-        list={DRAW_TYPE}
+        list={DRAW.allowed.tool}
         category="도구"
-        onClick={(e) => dispatch(ToolStore.actions.setTool(e))}
+        value={activeTool}
+        onChange={(v) => dispatch(setTool(v))}
       />
-      <TypeWrap list={SHAPE_TYPE} category="도형" />
+      <TypeWrap
+        list={DRAW.allowed.shape}
+        category="도형"
+        onChange={(shape) => window.__insertShape?.(shape)}
+      />
       <FileInput />
     </nav>
   );

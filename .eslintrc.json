@@ -21,11 +21,7 @@
       }
     }
   },
-  "extends": [
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "prettier"
-  ],
+  "extends": ["eslint:recommended", "plugin:react/recommended", "prettier"],
   "rules": {
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
@@ -35,7 +31,10 @@
     "react-hooks/exhaustive-deps": "warn",
 
     "import/no-unresolved": "error",
-    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
+    "no-unused-vars": [
+      "warn",
+      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+    ],
     "no-console": ["warn", { "allow": ["warn", "error"] }]
   },
   "overrides": [

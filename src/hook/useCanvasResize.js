@@ -4,41 +4,45 @@ const useCanvasResize = (initialSize) => {
   const [size, setSize] = useState(initialSize);
   const containerRef = useRef(null);
 
+  const isResizingRef = useRef(false);
+  const startXRef = useRef(0);
+  const startYRef = useRef(0);
+  const startWRef = useRef(0);
+  const startHRef = useRef(0);
+
   useEffect(() => {
-    const handle = containerRef.current.querySelector('.resize-handle');
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handle = container.querySelector('.resize-handle');
     if (!handle) return;
 
-    let isResize = false;
-    let startX;
-    let startY;
-    let startWidth;
-    let startHeight;
-
     const onMouseDown = (e) => {
-      isResize = true;
-      startX = e.clientX;
-      startY = e.clientY;
-      startWidth = size.width;
-      startHeight = size.height;
+      isResizingRef.current = true;
+      startXRef.current = e.clientX;
+      startYRef.current = e.clientY;
+      startWRef.current = container.clientWidth;
+      startHRef.current = container.clientHeight;
 
       window.addEventListener('mousemove', onMouseMove);
       window.addEventListener('mouseup', onMouseUp);
     };
 
     const onMouseMove = (e) => {
-      if (!isResize) return;
-
-      const newWidth = startWidth + (e.clientX - startX);
-      const newHeight = startHeight + (e.clientY - startY);
-
-      setSize({
-        width: Math.max(100, newWidth),
-        height: Math.max(100, newHeight),
-      });
+      if (!isResizingRef.current) return;
+      const newWidth = Math.max(
+        100,
+        startWRef.current + (e.clientX - startXRef.current)
+      );
+      const newHeight = Math.max(
+        100,
+        startHRef.current + (e.clientY - startYRef.current)
+      );
+      setSize({ width: newWidth, height: newHeight });
     };
 
     const onMouseUp = () => {
-      isResize = false;
+      isResizingRef.current = false;
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
     };
@@ -50,7 +54,7 @@ const useCanvasResize = (initialSize) => {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
     };
-  }, [size]);
+  }, []);
 
   return { size, containerRef };
 };

@@ -1,9 +1,18 @@
+/**
+ * @file store.js
+ * @author YJH
+ */
+// src/redux/store.js
 import { configureStore } from '@reduxjs/toolkit';
-import ToolStore from '../slice/toolSlice';
+import drawReducer from '../slice/drawSlice';
+import styleReducer from '../slice/styleSlice';
+import toolRegistryReducer from '../slice/toolSlice';
 
 const store = configureStore({
   reducer: {
-    tool: ToolStore.reducer,
+    draw: drawReducer,
+    style: styleReducer,
+    toolRegistry: toolRegistryReducer,
   },
 });
 
