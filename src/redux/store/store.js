@@ -1,8 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
 import ToolStore from '../slice/toolSlice';
 
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     tool: ToolStore.reducer,
   },
 });
+
+export { store };

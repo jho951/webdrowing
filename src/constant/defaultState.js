@@ -6,48 +6,72 @@
 
 /**
  * 기본 설정 상수 집합
- * - TOOL: 도구의 활성값 및 허용 목록
+ * - DRAW: 그리기 활성타입 및 허용 목록
  * - STYLE: 선 색상/두께 기본값
  * - VIEW: 뷰 스케일/회전 기본값
+ * - SIZE: 캔버스 크기
  * - HISTORY: 히스토리 저장 방식/예산/최대 개수
  */
 const DRAW_DEFAULT = Object.freeze({
-  TOOL: Object.freeze({
-    /** 초기 활성 도구 */
-    ACTIVE: 'brush',
-    /** 허용 도구 리스트 */
-    ALLOWED: Object.freeze(['brush', 'eraser', 'text', 'select']),
+  DRAW: Object.freeze({
+    active: Object.freeze({ value: 'brush', label: '붓' }),
+
+    allowed: Object.freeze({
+      tool: [
+        { value: 'brush', label: '붓' },
+        { value: 'eraser', label: '지우개' },
+      ],
+      shape: [
+        { value: 'line', label: '직선' },
+        { value: 'curve', label: '곡선' },
+        { value: 'circle', label: '원' },
+        { value: 'rect', label: '사각형' },
+        { value: 'triangle', label: '삼각형' },
+        { value: 'star', label: '별' },
+      ],
+    }),
   }),
 
   STYLE: Object.freeze({
-    /** 기본 선 색상 (hex) */
-    COLOR: '#000000',
-    /** 기본 선 두께 (px) */
-    WIDTH: 5,
+    activeColor: Object.freeze({ value: '#000000', label: 'black' }),
+    allowedColor: Object.freeze([
+      { value: '#000000', label: 'black' },
+      { value: '#FFFFFF', label: 'white' },
+      { value: '#FF0000', label: 'red' },
+      { value: '#0000FF', label: 'blue' },
+      { value: '#00FF00', label: 'green' },
+      { value: '#FFFF00', label: 'yellow' },
+    ]),
+
+    activeWidth: Object.freeze({ value: 5, label: 'normal' }),
+    allowedWidth: Object.freeze([
+      { value: 9, label: 'thickest' },
+      { value: 7, label: 'thick' },
+      { value: 5, label: 'normal' },
+      { value: 3, label: 'thin' },
+      { value: 1, label: 'thinest' },
+    ]),
+  }),
+
+  SIZE: Object.freeze({
+    width: 300,
+    height: 300,
   }),
 
   VIEW: Object.freeze({
-    /** 초기 스케일 배율 */
     SCALE: 1.0,
-    /** 초기 회전 각도 (deg) */
     ROTATE: 0,
   }),
 
   HISTORY: Object.freeze({
-    /**
-     * 저장 모드 (예: 좌표/스트로크 데이터 정밀도)
-     * - 'float32' 기본, 'uint16' 성능/용량 테스트 예정
-     */
-    MODE: 'float32',
-    /** 히스토리 메모리 예산 (MB) */
+    MODE: 'float32', // 성능 테스트
     BUDGET_MB: 16,
-    /** 히스토리 최대 스냅샷 개수 */
     MAX_COUNT: 500,
   }),
 });
 
 /**
- * 툴 상태 초기화 팩토리
+ * 툴 상태 초기화
  * @param {{ defaultTool?: string }} [opts]
  * @returns {{ activeTool: string, style: { color: string, width: number }, coordMode: string }}
  */
@@ -58,8 +82,7 @@ function makeInitialToolState(opts = {}) {
       color: DRAW_DEFAULT.STYLE.COLOR,
       width: DRAW_DEFAULT.STYLE.WIDTH,
     },
-    // 좌표/히스토리 정밀도 기본값을 coordMode에 재사용
-    coordMode: DRAW_DEFAULT.HISTORY.MODE, // 'float32'
+    coordMode: DRAW_DEFAULT.HISTORY.MODE,
   };
 }
 

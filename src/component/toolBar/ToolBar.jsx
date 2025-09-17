@@ -1,25 +1,25 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
-import { DRAW_TYPE } from '../../constant/drawType';
-import Select from '../select/Select';
+import { DRAW_TYPE, SHAPE_TYPE } from '../../constant/drawType';
 
+import TypeWrap from '../typeWrap/TypeWrap';
+import FileInput from '../fileInput/FileInput';
 import ToolStore from '../../redux/slice/toolSlice';
 
 import './toolBar.css';
 
 const ToolBar = () => {
   const dispatch = useDispatch();
-  const activeTool = useSelector(ToolStore.selectors.selectActiveTool);
 
   return (
     <nav id="header" className="drawer-toolbar">
-      <Select
-        id="tool-select"
-        label="도구"
-        value={activeTool}
-        onChange={(e) => dispatch(ToolStore.actions.setTool(e.target.value))}
-        options={DRAW_TYPE}
+      <TypeWrap
+        list={DRAW_TYPE}
+        category="도구"
+        onClick={(e) => dispatch(ToolStore.actions.setTool(e))}
       />
+      <TypeWrap list={SHAPE_TYPE} category="도형" />
+      <FileInput />
     </nav>
   );
 };

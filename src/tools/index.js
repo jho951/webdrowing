@@ -7,6 +7,9 @@ const REGISTRY = {
   // Todo... text: TextTool, rect: RectTool, circle: CircleTool ... 적용
 };
 
-export function getTool(name) {
+function getTool(name) {
   return REGISTRY[name] ?? BrushTool;
 }
+
+
+export { getTool };

@@ -1,0 +1,31 @@
+.type-container {
+  height: var(--header-height);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-content: space-between;
+  gap: 10px;
+  box-sizing: border-box;
+  color: var(--background-color);
+}
+
+.type-btn {
+  background-color: transparent;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--background-color);
+  cursor: pointer;
+}
+
+.active {
+  color: var(--active-color);
+  font-weight: bold;
+}
+
+.type-label {
+  width: 100%;
+  grid-column: 1 / span 3;
+  text-align: center;
+  border-top: 1px solid var(--border-color);
+}

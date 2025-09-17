@@ -4,8 +4,8 @@
  *              이 모듈 또한 단일 export(default)로 actions/selectors/reducer를 묶어 제공합니다.
  */
 
-import DefaultState from '../../constant/defaultState';
 import { createSlice } from '@reduxjs/toolkit';
+import DefaultState from '../../constant/defaultState';
 
 const { DRAW_DEFAULT, makeInitialToolState } = DefaultState;
 

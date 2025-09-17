@@ -1,8 +1,20 @@
+/**
+ * @file useCanvasDraw.js
+ * @author YJH
+ * @description 캔버스 드로잉 커스텀
+ * 훅
+ */
 import { useEffect, useRef } from 'react';
-import { initCanvas, getCanvasPos } from '@/utils/canvas';
-import { getTool } from '@/tools';
+import { initCanvas, getCanvasPos } from '../util/canvas';
+import { getTool } from '../tools/index';
 
-export function useCanvasDraw(
+/**
+ *
+ * @param {*} canvasRef
+ * @param {*} param1
+ * @returns
+ */
+function useCanvasDraw(
   canvasRef,
   { width = 800, height = 500, tool = 'brush', style = {} } = {}
 ) {
@@ -50,3 +62,5 @@ export function useCanvasDraw(
     onPointerLeave: endDraw,
   };
 }
+
+export { useCanvasDraw };

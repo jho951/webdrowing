@@ -1,7 +1,9 @@
+import DRAW_THEME from "../constant/drawTheme";
+
 const BrushTool = {
   begin(ctx, p, style) {
     ctx.globalCompositeOperation = 'source-over';
-    ctx.strokeStyle = style.color ?? '#000';
+    ctx.strokeStyle = style.color ?? DRAW_THEME.black;
     ctx.lineWidth = style.width ?? 5;
     ctx.beginPath();
     ctx.moveTo(p.x, p.y);

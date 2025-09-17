@@ -1,3 +1,15 @@
+/**
+ * @file canvas.js\
+ * @author YJH
+ * @description 캔버스 유틸
+ */
+
+/**
+ *
+ * @param {*} canvas
+ * @param {*} param1
+ * @returns
+ */
 function initCanvas(canvas, { width = 800, height = 500 } = {}) {
   const dpr = window.devicePixelRatio || 1;
   canvas.width = Math.floor(width * dpr);
@@ -12,6 +24,13 @@ function initCanvas(canvas, { width = 800, height = 500 } = {}) {
   ctx.lineJoin = 'round';
   return ctx;
 }
+
+/**
+ *
+ * @param {*} canvas
+ * @param {*} e
+ * @returns
+ */
 function getCanvasPos(canvas, e) {
   const ev = e.nativeEvent ?? e;
   const rect = canvas.getBoundingClientRect();

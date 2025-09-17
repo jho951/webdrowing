@@ -1,14 +1,21 @@
-#header{
+#header {
   width: 100%;
-  max-width: var(--max-width);
   height: var(--header-height);
-  background-color: var(--primary-color);
+
   display: flex;
   align-items: center;
-  border-radius: var(--border-radius) var(--border-radius) 0 0 ;
+
+  background-color: var(--primary-color);
 }
 
-.tool-btn{
+.drawer-toolbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 100px;
+}
+
+.tool-btn {
   background-color: transparent;
   border: none;
   cursor: pointer;
