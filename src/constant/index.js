@@ -19,7 +19,7 @@ function makeInitialToolState(opts = {}) {
 }
 
 /**
- * 초기 View 상태 팩토리
+ * 회전 및 확대 기능 시 적용
  */
 function makeInitialViewState() {
   return {
@@ -29,7 +29,7 @@ function makeInitialViewState() {
 }
 
 /**
- * 초기 Doc/History 상태 팩토리
+ * 히스토리 추후 기능 시 적용
  */
 function makeInitialDocState() {
   return {

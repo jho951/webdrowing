@@ -1,35 +1,58 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { selectActiveTool, setTool } from '../../redux/slice/drawSlice';
+import {
+  selectActiveShape,
+  selectActiveTool,
+  setShape,
+  setTool,
+} from '../../redux/slice/drawSlice';
 import TypeWrap from '../typeWrap/TypeWrap';
 import FileInput from '../fileInput/FileInput';
 import { DRAW } from '../../constant/draw';
-import './toolBar.css';
+import { STYLE } from '../../constant/style';
 import {
-  selectAllowedShapes,
-  selectAllowedTools,
-} from '../../redux/slice/toolSlice';
+  selectColor,
+  selectWidth,
+  setColor,
+  setWidth,
+} from '../../redux/slice/styleSlice';
+
+import './toolBar.css';
 
 const ToolBar = () => {
   const dispatch = useDispatch();
   const activeTool = useSelector(selectActiveTool);
-  const tools = useSelector(selectAllowedTools);
-  const shapes = useSelector(selectAllowedShapes);
+  const activeShape = useSelector(selectActiveShape);
+  const activeColor = useSelector(selectColor);
+  const activeWidth = useSelector(selectWidth);
 
   return (
-    <nav id="header" className="drawer-toolbar">
+    <header id="header" className="drawer-toolbar">
+      <FileInput />
       <TypeWrap
-        list={DRAW.allowed.tool}
+        list={DRAW.allowedTool}
         category="도구"
         value={activeTool}
-        onChange={(v) => dispatch(setTool(v))}
+        onChange={(tool) => dispatch(setTool(tool))}
       />
       <TypeWrap
-        list={DRAW.allowed.shape}
+        list={DRAW.allowedShape}
         category="도형"
-        onChange={(shape) => window.__insertShape?.(shape)}
+        value={activeShape}
+        onChange={(shape) => dispatch(setShape(shape))}
       />
-      <FileInput />
-    </nav>
+      <TypeWrap
+        list={STYLE.allowedColor}
+        category="색"
+        value={activeColor}
+        onChange={(color) => dispatch(setColor(color))}
+      />
+      <TypeWrap
+        list={STYLE.allowedWidth}
+        category="크기"
+        value={activeWidth}
+        onChange={(width) => dispatch(setWidth(width))}
+      />
+    </header>
   );
 };
 

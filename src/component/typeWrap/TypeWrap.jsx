@@ -1,9 +1,8 @@
-// TypeWrap.jsx
 import './typeWrap.css';
 
 const TypeWrap = ({ list, category = '', value, onChange }) => {
   return (
-    <section className="type-container" role="group" aria-label={category}>
+    <nav className="type-container" role="group" aria-label={category}>
       {list.map((ele) => {
         const active = value === ele.value;
         return (
@@ -19,7 +18,7 @@ const TypeWrap = ({ list, category = '', value, onChange }) => {
         );
       })}
       <span className="type-label">{category}</span>
-    </section>
+    </nav>
   );
 };
 

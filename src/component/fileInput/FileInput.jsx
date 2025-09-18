@@ -1,30 +1,31 @@
-import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { setImageSrc } from '../../redux/slice/imageSlice';
+
+import './fileInput.css';
 
 const FileInput = () => {
-  const [loadedImage, setLoadedImage] = useState(null);
+  const dispatch = useDispatch();
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    console.log(file);
-    // if (file) {
-    //   const reader = new FileReader();
-    //   reader.onload = (event) => {
-    //     const img = new Image();
-    //     img.onload = () => {
-    //       setLoadedImage(img); // 이미지를 상태에 저장
-    //       setSize({ width: img.width, height: img.height }); // 캔버스 크기만 먼저 조절
-    //     };
-    //     img.src = event.target.result;
-    //   };
-    //   reader.readAsDataURL(file);
-    // }
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    dispatch(setImageSrc(url));
   };
 
   return (
-    <input type="file" accept="image/*" onChange={(e) => handleFileChange(e)} />
+    <>
+      <label htmlFor="file" className="file-label">
+        붙여넣기
+      </label>
+      <input
+        id="file"
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+      />
+    </>
   );
 };
 
 export default FileInput;
-
-// renderImageToCanvas();

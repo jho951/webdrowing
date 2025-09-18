@@ -1,22 +1,8 @@
-#header {
-  width: 100%;
-  height: var(--header-height);
-
-  display: flex;
-  align-items: center;
-
-  background-color: var(--primary-color);
-}
-
 .drawer-toolbar {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 100px;
-}
-
-.tool-btn {
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
+  justify-content: flex-start;
+  gap: 50px;
+  padding: 0 20px;
 }

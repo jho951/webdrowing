@@ -5,6 +5,11 @@ import { LineTool } from './line';
 import { RectTool } from './rect';
 import { StarTool } from './star';
 
+/**
+ *
+ * @param {*} fn
+ * @returns
+ */
 const oneShot = (fn) => ({
   begin(ctx, p) {
     ctx.save();
@@ -15,6 +20,9 @@ const oneShot = (fn) => ({
   end() {},
 });
 
+/**
+ *
+ */
 const REGISTRY = {
   brush: BrushTool,
   eraser: EraserTool,
@@ -24,6 +32,13 @@ const REGISTRY = {
   circle: oneShot(CircleTool),
 };
 
-export function getTool(name) {
+/**
+ *
+ * @param {*} name
+ * @returns
+ */
+function getTool(name) {
   return REGISTRY[name] ?? BrushTool;
 }
+
+export { getTool };

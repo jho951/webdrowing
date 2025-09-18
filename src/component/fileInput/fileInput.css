@@ -1,0 +1,8 @@
+#file {
+  display: none;
+}
+
+.file-label {
+  color: var(--background-color);
+  cursor: pointer;
+}
