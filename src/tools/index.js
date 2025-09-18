@@ -20,13 +20,10 @@ const oneShot = (fn) => ({
   end() {},
 });
 
-/**
- *
- */
 const REGISTRY = {
   brush: BrushTool,
   eraser: EraserTool,
-  line: oneShot(LineTool),
+  line: LineTool,
   rect: oneShot(RectTool),
   star: oneShot(StarTool),
   circle: oneShot(CircleTool),

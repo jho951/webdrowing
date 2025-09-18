@@ -3,9 +3,7 @@
  * @description 선 색상/두께 전용 슬라이스
  */
 import { createSlice } from '@reduxjs/toolkit';
-import DefaultState from '../../constant';
-
-const { STYLE } = DefaultState;
+import { STYLE } from '../../constant/style';
 
 const initialState = {
   color: STYLE.activeColor.value,

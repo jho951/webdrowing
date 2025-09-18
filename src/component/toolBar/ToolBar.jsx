@@ -5,24 +5,28 @@ import {
   setShape,
   setTool,
 } from '../../redux/slice/drawSlice';
-import TypeWrap from '../typeWrap/TypeWrap';
-import FileInput from '../fileInput/FileInput';
-import { DRAW } from '../../constant/draw';
-import { STYLE } from '../../constant/style';
 import {
   selectColor,
   selectWidth,
   setColor,
   setWidth,
 } from '../../redux/slice/styleSlice';
+import TypeWrap from '../typeWrap/TypeWrap';
+import FileInput from '../fileInput/FileInput';
+import { DRAW } from '../../constant/draw';
+import { STYLE } from '../../constant/style';
 
 import './toolBar.css';
 
 const ToolBar = () => {
   const dispatch = useDispatch();
+  // 도구 상태관리
   const activeTool = useSelector(selectActiveTool);
+  // 도형 상태관리
   const activeShape = useSelector(selectActiveShape);
+  // 색깔 상태관리
   const activeColor = useSelector(selectColor);
+  // 크기 상태관리
   const activeWidth = useSelector(selectWidth);
 
   return (

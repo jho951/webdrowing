@@ -1,7 +1,7 @@
 /**
- * @file view.js
+ * @file style.js
  * @author YJH
- * @description 대시보드의 영역의 확대, 축소, 회전
+ * @description 도형과 도구 색과 굵기
  */
 const STYLE = Object.freeze({
   activeColor: Object.freeze({ value: '#000000', label: 'black' }),

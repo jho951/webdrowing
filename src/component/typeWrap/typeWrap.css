@@ -1,12 +1,14 @@
 .type-container {
-  height: var(--header-height);
+  min-width: 130px;
+  height: 100%;
+
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   align-content: space-between;
 
   color: var(--background-color);
 
-  gap: 10px;
+  gap: 5px;
 }
 
 .type-btn {
@@ -15,6 +17,7 @@
   align-items: center;
 
   color: var(--background-color);
+
   font-weight: bold;
 }
 
@@ -24,7 +27,10 @@
 
 .type-label {
   width: 100%;
+
   grid-column: 1 / span 3;
+
   text-align: center;
+
   border-top: 1px solid var(--border-color);
 }

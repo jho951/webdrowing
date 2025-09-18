@@ -1,11 +1,10 @@
 import Canvas from '../canvas/Canvas';
-import DefaultState from '../../constant';
+import { SIZE } from '../../constant/size';
 import { useDevicePixelRatio } from '../../hook/useDevicePixelRatio';
 
 import './dashBoard.css';
 
 const DashBoard = () => {
-  const { SIZE } = DefaultState;
   const DPR = useDevicePixelRatio();
 
   return (

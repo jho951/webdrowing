@@ -4,8 +4,6 @@
  * @description 좌표 계산 유틸리티
  */
 
-import { getTool } from '../tools';
-
 /**
  * 마우스 이벤트 좌표를 반환
  * - 캔버스 내에서의 상대 좌표가 필요
@@ -18,22 +16,14 @@ import { getTool } from '../tools';
  * @returns {number} return.y - 캔버스 내 y 좌표
  */
 function getCanvasPos(canvas, event) {
-  if (
-    event.target === canvas &&
-    typeof event.offsetX === 'number' &&
-    typeof event.offsetY === 'number'
-  ) {
-    return { x: event.offsetX, y: event.offsetY };
-  }
-
   const rect = canvas.getBoundingClientRect();
 
-  const x = (event.clientX ?? 0) - rect.left;
-  const y = (event.clientY ?? 0) - rect.top;
-  // console.log(rect);
-  // console.log(x, y);
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+
   return { x, y };
 }
+
 /**
  *
  * @param {*} ctx
@@ -49,49 +39,12 @@ function applyCtxStyle(ctx, style) {
 /**
  *
  * @param {*} canvas
- * @param {*} shape
- * @param {*} style
- * @param {*} param3
- * @returns
- */
-function renderShapeOnceAt(canvas, shape, style, { x, y }) {
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-
-  applyCtxStyle(ctx, style);
-
-  const shapeTool = getTool(shape);
-  shapeTool.begin(ctx, { x, y });
-  if (typeof shapeTool.end === 'function') {
-    shapeTool.end(ctx);
-  }
-}
-
-/**
- *
- * @param {*} canvas
- * @param {*} shape
- * @param {*} style
- * @returns
- */
-function renderShapeOnceAtCenter(canvas, shape, style) {
-  if (!canvas) return;
-  const rect = canvas.getBoundingClientRect();
-  const center = { x: rect.width / 2, y: rect.height / 2 };
-  renderShapeOnceAt(canvas, shape, style, center);
-}
-
-/**
- *
- * @param {*} canvas
  * @param {*} img
  * @param {*} padding
  * @returns
  */
-function drawImageCentered(canvas, img, padding = 16) {
+function drawImageCentered(canvas, img) {
   const ctx = canvas.getContext('2d');
-  if (!ctx) return;
 
   const cw = canvas.width;
   const ch = canvas.height;
@@ -99,7 +52,7 @@ function drawImageCentered(canvas, img, padding = 16) {
   const iw = img.naturalWidth;
   const ih = img.naturalHeight;
 
-  const scale = Math.min((cw - padding * 2) / iw, (ch - padding * 2) / ih, 1);
+  const scale = Math.min((cw * 2) / iw, (ch * 2) / ih, 1);
   const w = Math.max(1, Math.floor(iw * scale));
   const h = Math.max(1, Math.floor(ih * scale));
   const x = Math.floor((cw - w) / 2);
@@ -112,10 +65,4 @@ function drawImageCentered(canvas, img, padding = 16) {
   ctx.restore();
 }
 
-export {
-  getCanvasPos,
-  applyCtxStyle,
-  renderShapeOnceAt,
-  renderShapeOnceAtCenter,
-  drawImageCentered,
-};
+export { getCanvasPos, applyCtxStyle, drawImageCentered };

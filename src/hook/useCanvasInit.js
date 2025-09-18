@@ -12,16 +12,13 @@ import { useEffect } from 'react';
  */
 function useCanvasInit(canvasRef, size, dpr) {
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    canvasRef.current.width = Math.round(size.width * dpr);
+    canvasRef.current.height = Math.round(size.height * dpr);
 
-    canvas.width = Math.round(size.width * dpr);
-    canvas.height = Math.round(size.height * dpr);
-
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    if (ctx) {
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
+    const ctx = canvasRef.current.getContext('2d', {
+      willReadFrequently: true,
+    });
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }, [canvasRef, size, dpr]);
 }
 

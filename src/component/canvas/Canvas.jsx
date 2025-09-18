@@ -16,7 +16,7 @@ import {
 import { useCanvasInit } from '../../hook/useCanvasInit';
 import { useCanvasDraw } from '../../hook/useCanvasDraw';
 
-import { drawImageCentered, renderShapeOnceAtCenter } from '../../util/canvas';
+import { drawImageCentered } from '../../util/canvas';
 
 import './canvas.css';
 
@@ -28,12 +28,9 @@ function Canvas({ size, dpr }) {
   const imageSrc = useSelector(selectImageSrc);
   const style = useSelector(selectStyle);
 
-  const handlers = useCanvasDraw(canvasRef, { tool, style });
   useCanvasInit(canvasRef, size, dpr);
 
-  useEffect(() => {
-    renderShapeOnceAtCenter(canvasRef.current, shape, style);
-  }, [shape, style]);
+  const handlers = useCanvasDraw(canvasRef, { tool, style });
 
   useEffect(() => {
     const img = new Image();
@@ -47,9 +44,9 @@ function Canvas({ size, dpr }) {
     <canvas
       ref={canvasRef}
       className="canvas-wrap"
+      onPointerUp={handlers.onPointerUp}
       onPointerDown={handlers.onPointerDown}
       onPointerMove={handlers.onPointerMove}
-      onPointerUp={handlers.onPointerUp}
       onPointerLeave={handlers.onPointerLeave}
       onPointerCancel={handlers.onPointerCancel}
     />
