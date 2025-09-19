@@ -12,14 +12,15 @@ import { getTool } from '../tools';
  * @param {*} param1
  * @returns
  */
-function useCanvasDraw(canvasRef, { tool = 'brush', style } = {}) {
+function useCanvasDraw(canvasRef, { tool = 'brush', shape, style } = {}) {
   // 캔버스
   const ctxRef = useRef(null);
   // 툴 객체
   const toolRef = useRef(getTool(tool));
-  const pointerIdRef = useRef(null);
   // 그리기 여부
   const [isDraw, setIsDraw] = useState(false);
+
+  console.log(isDraw);
 
   const applyStyle = (ctx) => {
     ctx.strokeStyle = style.color;
@@ -46,7 +47,6 @@ function useCanvasDraw(canvasRef, { tool = 'brush', style } = {}) {
 
     const p = getCanvasPos(canvas, e);
     toolRef.current.begin(ctx, { ...p });
-    console.log(toolRef);
     setIsDraw(true);
 
     if (e.cancelable) e.preventDefault();
@@ -73,10 +73,6 @@ function useCanvasDraw(canvasRef, { tool = 'brush', style } = {}) {
 
     toolRef.current.end(ctx);
     setIsDraw(false);
-
-    const pid = pointerIdRef.current ?? e?.pointerId;
-    canvas.releasePointerCapture?.(pid);
-    pointerIdRef.current = null;
 
     if (e?.cancelable) e.preventDefault();
   };

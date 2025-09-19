@@ -30,7 +30,7 @@ function Canvas({ size, dpr }) {
 
   useCanvasInit(canvasRef, size, dpr);
 
-  const handlers = useCanvasDraw(canvasRef, { tool, style });
+  const handlers = useCanvasDraw(canvasRef, { tool, shape, style });
 
   useEffect(() => {
     const img = new Image();

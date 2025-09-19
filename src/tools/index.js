@@ -5,37 +5,24 @@ import { LineTool } from './line';
 import { RectTool } from './rect';
 import { StarTool } from './star';
 
-/**
- *
- * @param {*} fn
- * @returns
- */
-const oneShot = (fn) => ({
-  begin(ctx, p) {
-    ctx.save();
-    fn(ctx, p.x, p.y);
-    ctx.restore();
-  },
-  draw() {},
-  end() {},
-});
-
 const REGISTRY = {
   brush: BrushTool,
   eraser: EraserTool,
-  line: LineTool,
-  rect: oneShot(RectTool),
-  star: oneShot(StarTool),
-  circle: oneShot(CircleTool),
 };
 
-/**
- *
- * @param {*} name
- * @returns
- */
+const SHAPEREGISTRY = {
+  line: LineTool,
+  rect: RectTool,
+  star: StarTool,
+  circle: CircleTool,
+};
+
 function getTool(name) {
   return REGISTRY[name] ?? BrushTool;
 }
 
-export { getTool };
+function getShape(name) {
+  return SHAPEREGISTRY[name];
+}
+
+export { getTool, getShape };
