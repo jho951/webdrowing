@@ -13,14 +13,12 @@ import { getTool } from '../tools';
  * @returns
  */
 function useCanvasDraw(canvasRef, { tool = 'brush', shape, style } = {}) {
-  // 캔버스
+  // 그리기 객체
   const ctxRef = useRef(null);
   // 툴 객체
-  const toolRef = useRef(getTool(tool));
+  const drawRef = useRef(getTool(tool));
   // 그리기 여부
   const [isDraw, setIsDraw] = useState(false);
-
-  console.log(isDraw);
 
   const applyStyle = (ctx) => {
     ctx.strokeStyle = style.color;
@@ -35,7 +33,11 @@ function useCanvasDraw(canvasRef, { tool = 'brush', shape, style } = {}) {
   }, [canvasRef]);
 
   useEffect(() => {
-    toolRef.current = getTool(tool);
+    console.log(tool, '도구');
+    console.log(shape, '도형');
+    drawRef.current = getTool(tool);
+
+    console.log(drawRef);
   }, [tool]);
 
   // 마우스 클릭
@@ -46,7 +48,7 @@ function useCanvasDraw(canvasRef, { tool = 'brush', shape, style } = {}) {
     const canvas = canvasRef.current;
 
     const p = getCanvasPos(canvas, e);
-    toolRef.current.begin(ctx, { ...p });
+    drawRef.current.begin(ctx, { ...p });
     setIsDraw(true);
 
     if (e.cancelable) e.preventDefault();
@@ -60,7 +62,7 @@ function useCanvasDraw(canvasRef, { tool = 'brush', shape, style } = {}) {
 
     const p = getCanvasPos(canvas, e);
     applyStyle(ctx);
-    toolRef.current.draw(ctx, { ...p, pressure: e.pressure ?? 0.5 });
+    drawRef.current.draw(ctx, { ...p, pressure: e.pressure ?? 0.5 });
 
     if (e.cancelable) e.preventDefault();
   };
@@ -71,7 +73,7 @@ function useCanvasDraw(canvasRef, { tool = 'brush', shape, style } = {}) {
     const ctx = ctxRef.current;
     if (!canvas || !ctx) return;
 
-    toolRef.current.end(ctx);
+    drawRef.current.end(ctx);
     setIsDraw(false);
 
     if (e?.cancelable) e.preventDefault();

@@ -44,11 +44,15 @@ function Canvas({ size, dpr }) {
     <canvas
       ref={canvasRef}
       className="canvas-wrap"
-      onPointerUp={handlers.onPointerUp}
       onPointerDown={handlers.onPointerDown}
+      // 클릭 후 드래그
       onPointerMove={handlers.onPointerMove}
+      // 포인터가 더 이상 활성화 되지 않을 때
+      onPointerUp={handlers.onPointerUp}
+      // 그리기 영역을 벗어날 시
       onPointerLeave={handlers.onPointerLeave}
-      onPointerCancel={handlers.onPointerCancel}
+      // 시스템에 의해 포인터 중지 시 (pc 기반 시 leave로 방어 가능)
+      // onPointerCancel={handlers.onPointerCancel}
     />
   );
 }
