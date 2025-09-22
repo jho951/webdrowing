@@ -3,18 +3,23 @@
  * @author YJH
  */
 import { configureStore } from '@reduxjs/toolkit';
-import drawReducer from '../slice/drawSlice';
+
+import toolReducer from '../slice/toolSlice';
+import shapeReducer from '../slice/shapeSlice';
+import colorReducer from '../slice/colorSlice';
+import widthReducer from '../slice/widthSlice';
 import imageReducer from '../slice/imageSlice';
-import styleReducer from '../slice/styleSlice';
 
 /**
  * @description 리덕스 스토어
  */
 const store = configureStore({
   reducer: {
-    draw: drawReducer,
+    tool: toolReducer,
+    shape: shapeReducer,
+    color: colorReducer,
+    width: widthReducer,
     image: imageReducer,
-    style: styleReducer,
   },
 });
 

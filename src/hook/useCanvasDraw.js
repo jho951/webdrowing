@@ -1,80 +1,75 @@
-/**
- * @file useCanvasDraw.js
- * @author YJH
- */
-import { useEffect, useRef, useState } from 'react';
-import { getCanvasPos } from '../util/canvas';
-import { getTool } from '../tools';
+import { useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { selectActiveTool } from '../redux/slice/toolSlice';
+import { selectActiveShape } from '../redux/slice/shapeSlice';
+import { selectActiveColor } from '../redux/slice/colorSlice';
+import { selectActiveWidth } from '../redux/slice/widthSlice';
 
-/**
- *
- * @param {*} canvasRef
- * @param {*} param1
- * @returns
- */
-function useCanvasDraw(canvasRef, { tool = 'brush', shape, style } = {}) {
-  // 그리기 객체
-  const ctxRef = useRef(null);
-  // 툴 객체
-  const drawRef = useRef(getTool(tool));
-  // 그리기 여부
-  const [isDraw, setIsDraw] = useState(false);
+import { getCanvasPos } from '../util/get-canvas-pos.';
+import { applyCtxColor, applyCtxWidth } from '../util/get-style';
 
-  const applyStyle = (ctx) => {
-    ctx.strokeStyle = style.color;
-    ctx.lineWidth = style.width;
-  };
+function useCanvasDraw(canvasRef, ctxRef) {
+  const activeTool = useSelector(selectActiveTool);
+  const activeShape = useSelector(selectActiveShape);
+  const activeColor = useSelector(selectActiveColor);
+  const activeWidth = useSelector(selectActiveWidth);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    ctxRef.current = canvas.getContext('2d', { willReadFrequently: true });
-    ctxRef.lineCap = 'round';
-    ctxRef.lineJoin = 'round';
-  }, [canvasRef]);
+  const drawRef = useRef(activeTool);
 
-  useEffect(() => {
-    console.log(tool, '도구');
-    console.log(shape, '도형');
-    drawRef.current = getTool(tool);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
-    console.log(drawRef);
-  }, [tool]);
-
-  // 마우스 클릭
   const onPointerDown = (e) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
 
-    const ctx = ctxRef.current;
     const canvas = canvasRef.current;
-
+    const ctx = ctxRef.current;
     const p = getCanvasPos(canvas, e);
-    drawRef.current.begin(ctx, { ...p });
-    setIsDraw(true);
+
+    // if (activeShape) {
+    //   setIsDragging(true);
+    //   shapeRef.current.begin(ctx, { ...p });
+    // } else {
+    //   drawRef.current.begin(ctx, { ...p });
+    //   setIsDrawing(true);
+    // }
 
     if (e.cancelable) e.preventDefault();
   };
 
   const onPointerMove = (e) => {
-    if (!isDraw) return;
+    if (!isDrawing && !isDragging) return;
+
     const canvas = canvasRef.current;
     const ctx = ctxRef.current;
     if (!canvas || !ctx) return;
 
     const p = getCanvasPos(canvas, e);
-    applyStyle(ctx);
-    drawRef.current.draw(ctx, { ...p, pressure: e.pressure ?? 0.5 });
+
+    if (activeShape && isDragging) {
+      drawRef.current.draw(ctx, { ...p });
+    } else {
+      applyCtxColor(ctx, activeColor);
+      applyCtxWidth(ctx, activeWidth);
+      drawRef.current.draw(ctx, { ...p, pressure: e.pressure ?? 0.5 });
+    }
 
     if (e.cancelable) e.preventDefault();
   };
 
   const endDraw = (e) => {
-    if (!isDraw) return;
-    const canvas = canvasRef.current;
-    const ctx = ctxRef.current;
-    if (!canvas || !ctx) return;
+    if (!isDrawing && !isDragging) return;
 
-    drawRef.current.end(ctx);
-    setIsDraw(false);
+    const ctx = ctxRef.current;
+
+    if (isDrawing) {
+      drawRef.current.end(ctx);
+    } else if (isDragging) {
+      drawRef.current.end(ctx);
+      setIsDragging(false);
+    }
+
+    setIsDrawing(false);
 
     if (e?.cancelable) e.preventDefault();
   };

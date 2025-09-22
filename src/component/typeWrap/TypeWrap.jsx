@@ -8,8 +8,8 @@ const TypeWrap = ({ list, category, value, onChange }) => {
           <button
             key={ele.value}
             className={`type-btn ${value === ele.value ? 'active' : ''}`}
-            type="button"
-            onClick={() => onChange?.(ele.value)}
+            type="tab"
+            onClick={() => onChange?.(ele)}
           >
             {ele.label}
           </button>

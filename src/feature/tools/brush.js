@@ -1,6 +1,5 @@
 const BrushTool = {
   begin(ctx, p) {
-    console.log(ctx);
     ctx.save();
     ctx.globalCompositeOperation = 'source-over';
     ctx.beginPath();

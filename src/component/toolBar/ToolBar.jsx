@@ -1,20 +1,21 @@
 import { useDispatch, useSelector } from 'react-redux';
+
 import {
-  selectActiveShape,
+  resetShapeState,
   selectActiveTool,
-  setShape,
   setTool,
-} from '../../redux/slice/drawSlice';
-import {
-  selectColor,
-  selectWidth,
-  setColor,
-  setWidth,
-} from '../../redux/slice/styleSlice';
+} from '../../redux/slice/toolSlice';
+import { selectActiveShape, setShape } from '../../redux/slice/shapeSlice';
+import { selectActiveColor, setColor } from '../../redux/slice/colorSlice';
+import { selectActiveWidth, setWidth } from '../../redux/slice/widthSlice';
+
+import { TOOL } from '../../constant/tool';
+import { SHAPE } from '../../constant/shape';
+import { COLOR } from '../../constant/color';
+import { WIDTH } from '../../constant/width';
+
 import TypeWrap from '../typeWrap/TypeWrap';
 import FileInput from '../fileInput/FileInput';
-import { DRAW } from '../../constant/draw';
-import { STYLE } from '../../constant/style';
 
 import './toolBar.css';
 
@@ -25,35 +26,35 @@ const ToolBar = () => {
   // 도형 상태관리
   const activeShape = useSelector(selectActiveShape);
   // 색깔 상태관리
-  const activeColor = useSelector(selectColor);
+  const activeColor = useSelector(selectActiveColor);
   // 크기 상태관리
-  const activeWidth = useSelector(selectWidth);
+  const activeWidth = useSelector(selectActiveWidth);
 
   return (
     <header id="header" className="drawer-toolbar">
       <FileInput />
       <TypeWrap
-        list={DRAW.allowedTool}
+        list={TOOL.ALLOWED_TOOL}
         category="도구"
-        value={activeTool}
-        onChange={(tool) => dispatch(setTool(tool))}
+        value={activeTool.value}
+        onChange={(tool) => setTool(tool)}
       />
       <TypeWrap
-        list={DRAW.allowedShape}
+        list={SHAPE.ALLOWED_SHAPE}
         category="도형"
-        value={activeShape}
-        onChange={(shape) => dispatch(setShape(shape))}
+        value={activeShape.value}
+        onChange={(shape) => setShape(shape)}
       />
       <TypeWrap
-        list={STYLE.allowedColor}
+        list={COLOR.ALLOWED_COLOR}
         category="색"
-        value={activeColor}
+        value={activeColor.value}
         onChange={(color) => dispatch(setColor(color))}
       />
       <TypeWrap
-        list={STYLE.allowedWidth}
+        list={WIDTH.ALLOWED_WIDTH}
         category="크기"
-        value={activeWidth}
+        value={activeWidth.value}
         onChange={(width) => dispatch(setWidth(width))}
       />
     </header>
