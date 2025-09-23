@@ -20,6 +20,7 @@ const store = configureStore({
     color: colorReducer,
     width: widthReducer,
     image: imageReducer,
+     vector: vectorReducer,
   },
 });
 

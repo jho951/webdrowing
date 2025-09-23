@@ -2,8 +2,7 @@
  * @file DashBoard.jsx
  * @author YJH
  */
-
-import Canvas from '../bitmap/Bitmap';
+import Bitmap from '../bitmap/Bitmap';
 import Vector from '../vector/Vector';
 import Overlay from '../overlay/Overlay';
 
@@ -21,7 +20,7 @@ const DashBoard = () => {
       className="dashboard-container"
       style={{ width: `${SIZE.width}px`, height: `${SIZE.height}px` }}
     >
-      <Canvas />
+      <Bitmap />
       <Vector />
       <Overlay />
     </section>
