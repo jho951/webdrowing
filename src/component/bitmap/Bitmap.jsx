@@ -5,16 +5,15 @@
  */
 import { useLayoutEffect, useRef } from 'react';
 import { setupCanvas } from '../../util/set-canvas';
+import { useBitmap } from '../../hook/useBitmap';
 
-import { useCanvasDraw } from '../../hook/useCanvasDraw';
+import './bitmap.css';
 
-import './canvas.css';
-
-const Canvas = () => {
+const Bitmap = () => {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
 
-  const handlers = useCanvasDraw(canvasRef, ctxRef);
+  const handlers = useBitmap(canvasRef, ctxRef);
 
   useLayoutEffect(() => {
     if (!canvasRef.current) return;
@@ -24,7 +23,7 @@ const Canvas = () => {
   return (
     <canvas
       ref={canvasRef}
-      className="canvas-wrap"
+      className="bitmap-wrap"
       onPointerDown={handlers.onPointerDown}
       onPointerMove={handlers.onPointerMove}
       onPointerUp={handlers.onPointerUp}
@@ -35,4 +34,4 @@ const Canvas = () => {
   );
 };
 
-export default Canvas;
+export default Bitmap;

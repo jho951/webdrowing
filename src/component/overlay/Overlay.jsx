@@ -3,39 +3,59 @@ import { RectTool } from '../../feature/shape/rect';
 import { setupCanvas } from '../../util/set-canvas';
 import { getCanvasPos } from '../../util/get-canvas-pos.';
 import { useSelector } from 'react-redux';
-import { selectActiveShape } from '../../redux/slice/shapeSlice';
+import { selectActiveColor } from '../../redux/slice/colorSlice';
+import { selectActiveWidth } from '../../redux/slice/widthSlice';
 
 const Overlay = () => {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
-  const activeShape = useSelector(selectActiveShape);
   const [isDrawing, setIsDrawing] = useState(false);
+  const lastPointRef = useRef(null);
+  const activeColor = useSelector(selectActiveColor);
+  const activeWidth = useSelector(selectActiveWidth);
+
+  const handleCommit = ({ x, y, w, h }) => {
+    const ctx = ctxRef.current;
+    if (!ctx) return;
+    ctx.save();
+    ctx.setLineDash([]);
+    ctx.strokeStyle = activeColor.value;
+    ctx.lineWidth = activeWidth.value;
+    ctx.strokeRect(x, y, w, h);
+    ctx.restore();
+  };
 
   const handlePointerDown = (e) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    if (e.cancelable) e.preventDefault();
     const point = getCanvasPos(canvasRef.current, e);
     RectTool.begin(ctxRef.current, point);
     setIsDrawing(true);
+    canvasRef.current.setPointerCapture?.(e.pointerId);
   };
 
   const handlePointerMove = (e) => {
     if (!isDrawing) return;
     const point = getCanvasPos(canvasRef.current, e);
-    const ctx = ctxRef.current;
-    const canvas = canvasRef.current;
+    lastPointRef.current = point;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const ctx = ctxRef.current;
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     RectTool.draw(ctx, point);
   };
 
   const handlePointerUp = () => {
-    RectTool.end(ctxRef.current);
+    if (!isDrawing) return;
+    const ctx = ctxRef.current;
+    const currentPoint = lastPointRef.current;
+
+    const box = RectTool.end(ctx, currentPoint);
     setIsDrawing(false);
-    ctxRef.current.clearRect(
-      0,
-      0,
-      canvasRef.current.width,
-      canvasRef.current.height
-    );
+
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    if (box && handleCommit) {
+      handleCommit({ ...box });
+    }
   };
 
   useLayoutEffect(() => {

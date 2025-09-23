@@ -11,7 +11,13 @@ import { selectActiveWidth } from '../redux/slice/widthSlice';
 import { ToolMap } from '../feature/tools';
 import { getCanvasPos } from '../util/get-canvas-pos.';
 
-function useCanvasDraw(canvasRef, ctxRef) {
+/**
+ *@description 비트맵 그리기 메서드
+ * @param {*} canvasRef 비트맵 캔버스 ref
+ * @param {*} ctxRef    픽셀 기반 그리기
+ * @returns
+ */
+function useBitmap(canvasRef, ctxRef) {
   const activeTool = useSelector(selectActiveTool);
   const activeColor = useSelector(selectActiveColor);
   const activeWidth = useSelector(selectActiveWidth);
@@ -55,7 +61,6 @@ function useCanvasDraw(canvasRef, ctxRef) {
     if (drawTool?.end) {
       drawTool.end(ctx);
     }
-
     setIsDrawing(false);
   };
 
@@ -68,4 +73,4 @@ function useCanvasDraw(canvasRef, ctxRef) {
   };
 }
 
-export { useCanvasDraw };
+export { useBitmap };

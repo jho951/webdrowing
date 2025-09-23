@@ -3,6 +3,7 @@
  * @author YJH
  */
 
+import { SHAPE } from '../../constant/shape';
 import { CircleTool } from './circle';
 import { LineTool } from './line';
 import { RectTool } from './rect';
@@ -18,4 +19,28 @@ const ShapeMap = {
   star: StarTool,
 };
 
-export { ShapeMap };
+const rectFromBox = ({ x, y, w, h, color, width }) => {
+  return {
+    id: `${color}, ${x},${width + w}`,
+    type: ShapeMap.rect,
+    x,
+    y,
+    w,
+    h,
+    color,
+    width,
+  };
+};
+
+const renderShape = (ctx, shape, color, lineWidth) => {
+  const width = ctx.canvas.width;
+  const height = ctx.canvas.height;
+  for (const s of SHAPE.ALLOWED_SHAPE) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.lineWidth = lineWidth;
+    ctx.strokeStyle = color;
+  }
+};
+
+export { ShapeMap, rectFromBox };
