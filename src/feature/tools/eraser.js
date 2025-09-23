@@ -1,7 +1,12 @@
 const EraserTool = {
-  begin(ctx, p) {
+  begin(ctx, p, width) {
     ctx.save();
+
     ctx.globalCompositeOperation = 'destination-out';
+    ctx.lineWidth = width;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
     ctx.beginPath();
     ctx.moveTo(p.x, p.y);
   },

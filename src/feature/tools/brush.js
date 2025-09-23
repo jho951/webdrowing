@@ -1,7 +1,13 @@
 const BrushTool = {
-  begin(ctx, p) {
+  begin(ctx, p, width, color) {
     ctx.save();
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
     ctx.globalCompositeOperation = 'source-over';
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
     ctx.beginPath();
     ctx.moveTo(p.x, p.y);
   },

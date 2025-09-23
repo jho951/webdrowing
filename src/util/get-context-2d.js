@@ -6,6 +6,7 @@ const CTX_CACHE = new WeakMap();
 
 /**
  * 최초 1회만 getContext('2d') 하고 재사용.
+ * 속도 비교 필요
  * @param {*} canvas // 2D 컨텍스트 요소
  * @param {*} opts // 설정 옵션
  * @returns ctx

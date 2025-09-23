@@ -1,0 +1,4 @@
+.overlay-canvas {
+  z-index: calc(var(--z-index) + 200);
+  pointer-events: auto;
+}

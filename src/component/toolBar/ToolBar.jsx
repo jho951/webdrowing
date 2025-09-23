@@ -5,7 +5,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 
 import { setTool } from '../../redux/slice/toolSlice';
-import { setShape } from '../../redux/slice/shapeSlice'; // 도형 설정
+import { setShape } from '../../redux/slice/shapeSlice';
 import { setColor } from '../../redux/slice/colorSlice';
 import { setWidth } from '../../redux/slice/widthSlice';
 
@@ -34,16 +34,6 @@ const ToolBar = () => {
   // 크기 상태관리
   const activeWidth = useSelector((state) => state.width.activeWidth);
 
-  const handleToolChange = (tool) => {
-    // 도구를 변경할 때, 도형을 null로 설정
-    dispatch(setTool(tool));
-  };
-
-  const handleShapeChange = (shape) => {
-    // 도형을 변경할 때, 도구를 null로 설정
-    dispatch(setShape(shape));
-  };
-
   return (
     <header id="header" className="drawer-toolbar">
       <FileInput />
@@ -53,7 +43,7 @@ const ToolBar = () => {
         list={TOOL.ALLOWED_TOOL}
         category="도구"
         value={activeTool.value}
-        onChange={handleToolChange}
+        onChange={(tool) => dispatch(setTool(tool))}
       />
 
       {/* 도형 선택 */}
@@ -61,7 +51,7 @@ const ToolBar = () => {
         list={SHAPE.ALLOWED_SHAPE}
         category="도형"
         value={activeShape.value}
-        onChange={handleShapeChange}
+        onChange={(shape) => dispatch(setShape(shape))}
       />
 
       {/* 색상 선택 */}

@@ -8,11 +8,14 @@
  * @returns {number} return.x - 캔버스 내 x 좌표
  * @returns {number} return.y - 캔버스 내 y 좌표
  */
-const getCanvasPos = (canvas, event) => {
+const getCanvasPos = (canvas, e) => {
   const rect = canvas.getBoundingClientRect();
-  const x = event.clientX - rect.left;
-  const y = event.clientY - rect.top;
-  return { x, y };
+  const dpr = window.devicePixelRatio || 1;
+
+  return {
+    x: (e.clientX - rect.left) * dpr,
+    y: (e.clientY - rect.top) * dpr,
+  };
 };
 
 export { getCanvasPos };
