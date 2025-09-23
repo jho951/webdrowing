@@ -1,7 +1,3 @@
-/**
- * @file shapeSlice.js
- * @author YJH
- */
 import { createSlice } from '@reduxjs/toolkit';
 import { SHAPE } from '../../constant/shape';
 import { setTool } from './toolSlice';
@@ -15,12 +11,11 @@ const shapeSlice = createSlice({
   initialState,
   reducers: {
     setShape(state, action) {
-      const selectedShape = action.payload;
       const isExists = SHAPE.ALLOWED_SHAPE.some(
-        (shape) => shape.value === selectedShape.value
+        (shape) => shape.value === action.payload.value
       );
       if (isExists) {
-        state.activeShape = selectedShape;
+        state.activeShape = action.payload;
       } else {
         console.error('허용하지 않는 타입입니다.');
       }

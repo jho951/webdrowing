@@ -1,13 +1,13 @@
+/**
+ * @file ToolBar.jsx
+ * @author YJH
+ */
 import { useDispatch, useSelector } from 'react-redux';
 
-import {
-  resetShapeState,
-  selectActiveTool,
-  setTool,
-} from '../../redux/slice/toolSlice';
-import { selectActiveShape, setShape } from '../../redux/slice/shapeSlice';
-import { selectActiveColor, setColor } from '../../redux/slice/colorSlice';
-import { selectActiveWidth, setWidth } from '../../redux/slice/widthSlice';
+import { setTool } from '../../redux/slice/toolSlice';
+import { setShape } from '../../redux/slice/shapeSlice'; // 도형 설정
+import { setColor } from '../../redux/slice/colorSlice';
+import { setWidth } from '../../redux/slice/widthSlice';
 
 import { TOOL } from '../../constant/tool';
 import { SHAPE } from '../../constant/shape';
@@ -19,38 +19,60 @@ import FileInput from '../fileInput/FileInput';
 
 import './toolBar.css';
 
+/**
+ *
+ * @returns
+ */
 const ToolBar = () => {
   const dispatch = useDispatch();
   // 도구 상태관리
-  const activeTool = useSelector(selectActiveTool);
+  const activeTool = useSelector((state) => state.tool.activeTool);
   // 도형 상태관리
-  const activeShape = useSelector(selectActiveShape);
+  const activeShape = useSelector((state) => state.shape.activeShape);
   // 색깔 상태관리
-  const activeColor = useSelector(selectActiveColor);
+  const activeColor = useSelector((state) => state.color.activeColor);
   // 크기 상태관리
-  const activeWidth = useSelector(selectActiveWidth);
+  const activeWidth = useSelector((state) => state.width.activeWidth);
+
+  const handleToolChange = (tool) => {
+    // 도구를 변경할 때, 도형을 null로 설정
+    dispatch(setTool(tool));
+  };
+
+  const handleShapeChange = (shape) => {
+    // 도형을 변경할 때, 도구를 null로 설정
+    dispatch(setShape(shape));
+  };
 
   return (
     <header id="header" className="drawer-toolbar">
       <FileInput />
+
+      {/* 도구 선택 */}
       <TypeWrap
         list={TOOL.ALLOWED_TOOL}
         category="도구"
         value={activeTool.value}
-        onChange={(tool) => setTool(tool)}
+        onChange={handleToolChange}
       />
+
+      {/* 도형 선택 */}
       <TypeWrap
         list={SHAPE.ALLOWED_SHAPE}
         category="도형"
         value={activeShape.value}
-        onChange={(shape) => setShape(shape)}
+        onChange={handleShapeChange}
       />
+
+      {/* 색상 선택 */}
       <TypeWrap
         list={COLOR.ALLOWED_COLOR}
         category="색"
         value={activeColor.value}
         onChange={(color) => dispatch(setColor(color))}
       />
+
+      {/* 크기 선택 */}
       <TypeWrap
         list={WIDTH.ALLOWED_WIDTH}
         category="크기"
