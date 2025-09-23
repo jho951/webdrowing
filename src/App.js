@@ -1,14 +1,13 @@
 import ToolBar from './component/toolBar/ToolBar';
 import DashBoard from './component/dashBoard/DashBoard';
-
-import Vector from './component/vector/Vector';
+import Footer from './component/footer/Footer';
 
 function App() {
   return (
     <main id="main">
       <ToolBar />
       <DashBoard />
-      <Vector />
+      <Footer />
     </main>
   );
 }
