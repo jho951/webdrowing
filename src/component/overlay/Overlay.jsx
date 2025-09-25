@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setupCanvas } from '../../util/set-canvas';
 import { getCanvasPos } from '../../util/get-canvas-pos.';
 import { selectActiveShape } from '../../redux/slice/shapeSlice'; // 팔레트 선택
-import { shapeFromDrag } from '../../types/vector-shapes';
+
 import { addShape } from '../../redux/slice/vectorSlice';
 
 const DASH = [6, 6];
@@ -29,10 +29,12 @@ export default function Overlay() {
   };
 
   const renderPreview = () => {
-    const ctx = ctxRef.current; if (!ctx) return;
+    const ctx = ctxRef.current;
+    if (!ctx) return;
 
     const kind = activeShape?.value || 'rect';
-    const a = startRef.current, b = currRef.current;
+    const a = startRef.current,
+      b = currRef.current;
 
     clearOverlay();
 
@@ -48,25 +50,41 @@ export default function Overlay() {
 
     switch (kind) {
       case 'line':
-        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
         break;
       case 'circle': {
         ctx.strokeRect(x, y, w, h); // 보조 박스
-        const cx = x + w / 2, cy = y + h / 2, r = Math.max(w, h) / 2;
-        ctx.beginPath(); ctx.ellipse(cx, cy, r, r, 0, 0, Math.PI * 2); ctx.stroke();
+        const cx = x + w / 2,
+          cy = y + h / 2,
+          r = Math.max(w, h) / 2;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, r, r, 0, 0, Math.PI * 2);
+        ctx.stroke();
         break;
       }
       case 'star': {
         ctx.strokeRect(x, y, w, h);
-        const cx = x + w/2, cy = y + h/2, outerR = Math.max(w, h)/2, innerR = outerR*0.5;
-        const rad = (d)=>d*Math.PI/180; let ang=-90; const step=36;
+        const cx = x + w / 2,
+          cy = y + h / 2,
+          outerR = Math.max(w, h) / 2,
+          innerR = outerR * 0.5;
+        const rad = (d) => (d * Math.PI) / 180;
+        let ang = -90;
+        const step = 36;
         ctx.beginPath();
-        for (let i=0;i<10;i++){
-          const r = (i%2===0)? outerR: innerR;
-          const px = cx + r*Math.cos(rad(ang)), py = cy + r*Math.sin(rad(ang));
-          if (i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py); ang += step;
+        for (let i = 0; i < 10; i++) {
+          const r = i % 2 === 0 ? outerR : innerR;
+          const px = cx + r * Math.cos(rad(ang)),
+            py = cy + r * Math.sin(rad(ang));
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+          ang += step;
         }
-        ctx.closePath(); ctx.stroke();
+        ctx.closePath();
+        ctx.stroke();
         break;
       }
       case 'rect':
@@ -103,7 +121,12 @@ export default function Overlay() {
     // 스타일을 별도 slice에서 가져오고 싶다면 여기서 읽어서 넘기세요
     const style = { stroke: '#111', lineWidth: 2 };
 
-    const created = shapeFromDrag(kind, startRef.current, currRef.current, style);
+    const created = shapeFromDrag(
+      kind,
+      startRef.current,
+      currRef.current,
+      style
+    );
     if (created) dispatch(addShape(created));
 
     clearOverlay(); // 프리뷰 제거 (실선은 Vector 레이어가 그림)
@@ -113,12 +136,17 @@ export default function Overlay() {
     <canvas
       ref={canvasRef}
       className="overlay-canvas"
-      style={{ position:'absolute', inset:0, pointerEvents:'auto', cursor:'crosshair' }}
+      style={{
+        position: 'absolute',
+        inset: 0,
+        pointerEvents: 'auto',
+        cursor: 'crosshair',
+      }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      onContextMenu={(e)=>e.preventDefault()}
+      onContextMenu={(e) => e.preventDefault()}
     />
   );
 }

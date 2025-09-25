@@ -1,46 +1,18 @@
 /**
- * @file index.js
+ * @file feature/shape/index.js
  * @author YJH
+ * @description 도형 모음
  */
 
-import { SHAPE } from '../../constant/shape';
-import { CircleTool } from './circle';
-import { LineTool } from './line';
-import { RectTool } from './rect';
-import { StarTool } from './star';
+import { CircleShape } from './circle';
+import { LineShape } from './line';
+import { RectShape } from './rect';
 
-/**
- * @description 도구 맵퍼
- */
 const ShapeMap = {
-  circle: CircleTool,
-  line: LineTool,
-  rect: RectTool,
-  star: StarTool,
+  rect: RectShape,
+  circle: CircleShape,
+  line: LineShape,
+  // curve: CurveTool, // 2-스텝 도구도 추가 가능
 };
 
-const rectFromBox = ({ x, y, w, h, color, width }) => {
-  return {
-    id: `${color}, ${x},${width + w}`,
-    type: ShapeMap.rect,
-    x,
-    y,
-    w,
-    h,
-    color,
-    width,
-  };
-};
-
-const renderShape = (ctx, shape, color, lineWidth) => {
-  const width = ctx.canvas.width;
-  const height = ctx.canvas.height;
-  for (const s of SHAPE.ALLOWED_SHAPE) {
-    ctx.save();
-    ctx.beginPath();
-    ctx.lineWidth = lineWidth;
-    ctx.strokeStyle = color;
-  }
-};
-
-export { ShapeMap, rectFromBox };
+export { ShapeMap };

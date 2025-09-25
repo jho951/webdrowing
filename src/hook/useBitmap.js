@@ -1,7 +1,3 @@
-/**
- * @file useCanvasDraw.js
- * @author YJH
- */
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectActiveTool } from '../redux/slice/toolSlice';
@@ -12,10 +8,17 @@ import { ToolMap } from '../feature/tools';
 import { getCanvasPos } from '../util/get-canvas-pos.';
 
 /**
- *@description 비트맵 그리기 메서드
+ * @file useBitmap.js
+ * @author YJH
+ * @description 비트맵 그리기 메서드
  * @param {*} canvasRef 비트맵 캔버스 ref
  * @param {*} ctxRef    픽셀 기반 그리기
- * @returns
+ * @returns 
+    onPointerDown,
+    onPointerMove,
+    onPointerUp
+    onPointerLeave
+    onPointerCancel
  */
 function useBitmap(canvasRef, ctxRef) {
   const activeTool = useSelector(selectActiveTool);
@@ -47,8 +50,9 @@ function useBitmap(canvasRef, ctxRef) {
     const p = getCanvasPos(canvasRef.current, e);
 
     const drawTool = ToolMap[activeTool?.value];
+
     if (drawTool?.draw) {
-      drawTool.draw(ctx, { ...p, pressure: e.pressure ?? 0.5 });
+      drawTool.draw(ctx, { ...p });
     }
   };
 

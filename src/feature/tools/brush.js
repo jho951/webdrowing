@@ -1,3 +1,8 @@
+/**
+ * @file brush.js
+ * @author YJH
+ * @description 붓
+ */
 const BrushTool = {
   begin(ctx, p, width, color) {
     ctx.save();

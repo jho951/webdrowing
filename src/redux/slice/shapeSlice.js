@@ -16,8 +16,6 @@ const shapeSlice = createSlice({
       );
       if (isExists) {
         state.activeShape = action.payload;
-      } else {
-        console.error('허용하지 않는 타입입니다.');
       }
     },
   },

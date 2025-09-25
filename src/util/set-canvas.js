@@ -1,25 +1,27 @@
-/**
- * @file useCanvasInit
- * @author YJH
- */
 import { SIZE } from '../constant/size';
-import { getContext2d } from './get-context-2d';
 import { getDevicePixelRatio } from './get-device-pixel-ratio';
 
 /**
- * @description 캔버스를 초기화하고 크기 설정 (DPR 고려)
+ * @file set-canvas
+ * @author YJH
+ * @description 캔버스 초기화, 크기 설정
  * @param {HTMLCanvasElement} canvas
  * @returns {CanvasRenderingContext2D} ctx
  */
-const setupCanvas = (canvas) => {
+function setupCanvas(canvas) {
   const dpr = getDevicePixelRatio();
-  const rect = canvas.getBoundingClientRect();
-  canvas.width = Math.round(SIZE.width + rect.width * dpr);
-  canvas.height = Math.round(SIZE.height + rect.height * dpr);
+  canvas.style.width = `${SIZE.width}px`;
+  canvas.style.height = `${SIZE.height}px`;
 
-  const ctx = getContext2d(canvas, { willReadFrequently: true });
+  const pxW = Math.max(1, Math.round(SIZE.width * dpr));
+  const pxH = Math.max(1, Math.round(SIZE.height * dpr));
+  if (canvas.width !== pxW) canvas.width = pxW;
+  if (canvas.height !== pxH) canvas.height = pxH;
+
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.imageSmoothingEnabled = true;
   return ctx;
-};
+}
 
 export { setupCanvas };

@@ -1,29 +1,29 @@
-/**
- * @file Canvas.jsx
- * @author YJH
- * v1: 고정 크기 캔버스, 도형 클릭 시 중앙에 즉시 렌더
- */
 import { useLayoutEffect, useRef } from 'react';
 import { setupCanvas } from '../../util/set-canvas';
-import { useBitmap } from '../../hook/useBitmap';
 
-import './bitmap.css';
+import { useShapeOverlay } from '../../hook/useShapeOverlay';
 
-const Bitmap = () => {
+import './overlay.css';
+
+/**
+ * @file ShapeOverlay.js
+ * @author YJH
+ * @description 프리뷰/핸들 전용 레이어. 실제 도형 커밋은 useOverlay 훅 내부에서 vectorSlice로.
+ */
+function ShapeOverlayCanvas() {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
 
-  const handlers = useBitmap(canvasRef, ctxRef);
+  const handlers = useShapeOverlay(canvasRef, ctxRef);
 
   useLayoutEffect(() => {
-    if (!canvasRef.current) return;
     ctxRef.current = setupCanvas(canvasRef.current);
   }, []);
 
   return (
     <canvas
       ref={canvasRef}
-      className="bitmap-wrap"
+      className="overlay-wrap"
       onPointerDown={handlers.onPointerDown}
       onPointerMove={handlers.onPointerMove}
       onPointerUp={handlers.onPointerUp}
@@ -32,6 +32,6 @@ const Bitmap = () => {
       onContextMenu={(e) => e.preventDefault()}
     />
   );
-};
+}
 
-export default Bitmap;
+export default ShapeOverlayCanvas;

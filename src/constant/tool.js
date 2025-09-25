@@ -1,25 +1,18 @@
 /**
  * @file tool.js
- * @author YJH
- * @description 도구와 도형
+ * @desc 비트맵 도구 정의 (Base 레이어에서 바로 커밋)
  */
 
-/**
- * @description 초기 도구 값
- */
 const INITIAL_TOOL = Object.freeze({
-  type: 'tool',
+  kind: 'tool',
   value: 'brush',
   label: '붓',
-  pointer: 'cross-hair',
+  cursor: 'crosshair',
 });
 
-/**
- * @description 허용 가능한 도구 종류
- */
 const ALLOWED_TOOL = Object.freeze([
-  { type: 'tool', value: 'brush', label: '붓', pointer: 'cross-hair' },
-  { type: 'tool', value: 'eraser', label: '지우개', pointer: 'cross-hair' },
+  { kind: 'tool', value: 'brush', label: '붓', cursor: 'crosshair' },
+  { kind: 'tool', value: 'eraser', label: '지우개', cursor: 'crosshair' },
 ]);
 
 export const TOOL = { INITIAL_TOOL, ALLOWED_TOOL };

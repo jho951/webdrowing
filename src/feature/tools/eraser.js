@@ -1,3 +1,8 @@
+/**
+ * @file eraser.js
+ * @author YJH
+ * @description 지우개
+ */
 const EraserTool = {
   begin(ctx, p, width) {
     ctx.save();

@@ -1,6 +1,7 @@
 /**
  * @file ToolBar.jsx
  * @author YJH
+ * @returns
  */
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -19,10 +20,6 @@ import FileInput from '../fileInput/FileInput';
 
 import './toolBar.css';
 
-/**
- *
- * @returns
- */
 const ToolBar = () => {
   const dispatch = useDispatch();
   // 도구 상태관리

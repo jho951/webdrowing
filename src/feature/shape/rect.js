@@ -1,49 +1,45 @@
 /**
  * @file rect.js
  * @author YJH
+ * @description 사각형
  */
-const RectTool = (() => {
-  let startPoint = null;
-
-  const getRectPath = (p0, p1) => {
-    const x = Math.min(p0.x, p1.x);
-    const y = Math.min(p0.y, p1.y);
-    const w = Math.abs(p1.x - p0.x);
-    const h = Math.abs(p1.y - p0.y);
-    return { x, y, w, h };
-  };
-
-  return {
-    begin(ctx, point) {
-      startPoint = point;
-    },
-
-    draw(ctx, currentPoint) {
-      if (!startPoint) return;
-
-      ctx.save();
-
-      const { x, y, w, h } = getRectPath(startPoint, currentPoint);
-
-      ctx.setLineDash([5, 5]);
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(x, y, w, h);
+const RectShape = {
+  begin(ctx, p, width, color, state = {}) {
+    state.start = { x: p.x, y: p.y };
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+  },
+  draw(ctx, p, _w, _c, state = {}) {
+    if (!state.start) return;
+    const x = Math.min(state.start.x, p.x);
+    const y = Math.min(state.start.y, p.y);
+    const w = Math.abs(p.x - state.start.x);
+    const h = Math.abs(p.y - state.start.y);
+    ctx.beginPath();
+    ctx.strokeRect(x, y, w, h);
+  },
+  end(ctx, p, width, color, state = {}) {
+    if (!state.start) {
       ctx.restore();
-    },
+      return;
+    }
+    const shape = {
+      type: 'rect',
+      x: Math.min(state.start.x, p.x),
+      y: Math.min(state.start.y, p.y),
+      w: Math.abs(p.x - state.start.x),
+      h: Math.abs(p.y - state.start.y),
+      stroke: color,
+      lineWidth: width,
+    };
+    state.start = null;
+    ctx.restore();
+    return { shape };
+  },
+};
 
-    end(ctx, currentPoint) {
-      if (!startPoint) return null;
-      const box = {
-        x: Math.min(startPoint.x, currentPoint.x),
-        y: Math.min(startPoint.y, currentPoint.y),
-        w: Math.abs(currentPoint.x - startPoint.x),
-        h: Math.abs(currentPoint.y - startPoint.y),
-      };
-      startPoint = null;
-      return box;
-    },
-  };
-})();
-
-export { RectTool };
+export { RectShape };

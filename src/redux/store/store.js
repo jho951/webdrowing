@@ -9,6 +9,7 @@ import shapeReducer from '../slice/shapeSlice';
 import colorReducer from '../slice/colorSlice';
 import widthReducer from '../slice/widthSlice';
 import imageReducer from '../slice/imageSlice';
+import vectorReducer from '../slice/vectorSlice';
 
 /**
  * @description 리덕스 스토어
@@ -20,7 +21,7 @@ const store = configureStore({
     color: colorReducer,
     width: widthReducer,
     image: imageReducer,
-     vector: vectorReducer,
+    vector: vectorReducer,
   },
 });
 

@@ -1,8 +1,13 @@
 .bitmap-wrap {
-  width: 100%;
-  height: 100%;
-  touch-action: none;
-  cursor: crosshair;
+  display: block;
+
+  position: absolute;
+  inset: 0;
+
+  background-color: var(--background-color);
+  box-shadow: var(--box-shadow);
+
+  z-index: calc(var(--z-index) + 1);
 }
 
 .resize-handle.bottom-right {
