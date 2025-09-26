@@ -1,6 +1,6 @@
 /**
  * @file shape.js
- * @desc 벡터 도형 정의 (Overlay + VectorToolMap 연동)
+ * @desc 벡터 도형 정의
  */
 
 const INITIAL_SHAPE = Object.freeze({

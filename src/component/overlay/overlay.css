@@ -1,6 +1,0 @@
-.overlay-wrap {
-  position: absolute;
-  inset: 0;
-  display: block;
-  z-index: calc(var(--z-index) + 3);
-}

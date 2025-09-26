@@ -13,29 +13,39 @@
   --overay-color-rgb: 128, 128, 128;
   --active-color-rgb: 239, 255, 66;
 
-  --header-height: 100px;
-
-  --z-index: 100;
+  --header-height: 8rem;
+  --defult-figure: 1rem;
 
   --box-shadow:
-    0 1px 1px rgba(0, 0, 0, 0.11), 0 2px 2px rgba(0, 0, 0, 0.11),
-    0 4px 4px rgba(0, 0, 0, 0.11), 0 8px 8px rgba(0, 0, 0, 0.11),
-    0 16px 16px rgba(0, 0, 0, 0.11), 0 32px 32px rgba(0, 0, 0, 0.11);
+    0 1px 1px rgba(var(--border-color-rgb), 0.11),
+    0 2px 2px rgba(var(--border-color-rgb), 0.11),
+    0 4px 4px rgba(var(--border-color-rgb), 0.11),
+    0 8px 8px rgba(var(--border-color-rgb), 0.11),
+    0 16px 16px rgba(var(--border-color-rgb), 0.11),
+    0 32px 32px rgba(var(--border-color-rgb), 0.11);
+
+  --z-index: 100;
+}
+
+html {
+  font-size: 62.5%;
 }
 
 body {
-  margin: 0;
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  font-size: 1.6rem;
+  margin: 0;
 }
 
 main {
   width: 100%;
   min-height: 100vh;
-  background-color: rgba(var(--overay-color-rgb), 0.3);
+  background-color: rgba(var(--overay-color-rgb), 0.2);
   z-index: var(--z-index);
 }
 
@@ -45,8 +55,13 @@ header {
 
   display: flex;
   align-items: center;
+  justify-content: flex-start;
 
   background-color: var(--primary-color);
+
+  gap: 5rem;
+  padding: 2rem;
+
   z-index: calc(var(--z-index) + 100);
 }
 
@@ -56,8 +71,11 @@ header {
 }
 
 button {
+  margin: 0;
   padding: 0;
-  background-color: transparent;
   border: none;
+  background-color: transparent;
+
   cursor: pointer;
+  user-select: none;
 }

@@ -1,16 +1,13 @@
 import { useLayoutEffect, useRef } from 'react';
 import { setupCanvas } from '../../util/set-canvas';
-
 import { useShapeOverlay } from '../../hook/useShapeOverlay';
-
-import './overlay.css';
 
 /**
  * @file ShapeOverlay.js
  * @author YJH
  * @description 프리뷰/핸들 전용 레이어. 실제 도형 커밋은 useOverlay 훅 내부에서 vectorSlice로.
  */
-function ShapeOverlayCanvas() {
+const ShapeOverlayCanvas = () => {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
 
@@ -23,7 +20,7 @@ function ShapeOverlayCanvas() {
   return (
     <canvas
       ref={canvasRef}
-      className="overlay-wrap"
+      className="overlay"
       onPointerDown={handlers.onPointerDown}
       onPointerMove={handlers.onPointerMove}
       onPointerUp={handlers.onPointerUp}
@@ -32,6 +29,6 @@ function ShapeOverlayCanvas() {
       onContextMenu={(e) => e.preventDefault()}
     />
   );
-}
+};
 
 export default ShapeOverlayCanvas;

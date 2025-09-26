@@ -5,20 +5,16 @@ import { selectVectorShapes } from '../../redux/slice/vectorSlice';
 import { setupCanvas } from '../../util/set-canvas';
 import { renderVectorScene } from '../../util/vector';
 
-import './vector.css';
-
 /**
- *
+ * @file VectorCanvas.jsx
+ * @author YJH
+ * @description 벡터 캔버스
  * @returns
  */
 function VectorCanvas() {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const shapes = useSelector(selectVectorShapes);
-
-  useLayoutEffect(() => {
-    ctxRef.current = setupCanvas(canvasRef.current);
-  }, []);
 
   useEffect(() => {
     const c = canvasRef.current;
@@ -28,11 +24,15 @@ function VectorCanvas() {
     renderVectorScene(ctx, shapes);
   }, [shapes]);
 
+  useLayoutEffect(() => {
+    ctxRef.current = setupCanvas(canvasRef.current);
+  }, []);
+
   return (
     <canvas
-      ref={canvasRef}
-      className="vector-wrap"
+      className="vector"
       onContextMenu={(e) => e.preventDefault()}
+      ref={canvasRef}
     />
   );
 }

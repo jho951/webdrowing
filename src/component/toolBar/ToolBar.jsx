@@ -18,8 +18,6 @@ import { WIDTH } from '../../constant/width';
 import TypeWrap from '../typeWrap/TypeWrap';
 import FileInput from '../fileInput/FileInput';
 
-import './toolBar.css';
-
 const ToolBar = () => {
   const dispatch = useDispatch();
   // 도구 상태관리
@@ -32,7 +30,7 @@ const ToolBar = () => {
   const activeWidth = useSelector((state) => state.width.activeWidth);
 
   return (
-    <header id="header" className="drawer-toolbar">
+    <header id="header" className="toolbar-wrap">
       <FileInput />
 
       {/* 도구 선택 */}

@@ -8,20 +8,18 @@
 
   color: var(--background-color);
 
-  gap: 5px;
+  gap: 10px;
 }
 
 .type-btn {
   display: flex;
   justify-content: center;
   align-items: center;
-
   color: var(--background-color);
-
   font-weight: bold;
 }
 
-.active {
+.type-btn.active {
   color: rgba(var(--active-color-rgb), 0.8);
 }
 
@@ -33,4 +31,5 @@
   text-align: center;
 
   border-top: 1px solid var(--border-color);
+  user-select: none;
 }

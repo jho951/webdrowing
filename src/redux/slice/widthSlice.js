@@ -20,15 +20,7 @@ const widthSlice = createSlice({
   initialState,
   reducers: {
     setWidth(state, action) {
-      const selectedWidth = action.payload;
-      const isExists = WIDTH.ALLOWED_WIDTH.some(
-        (width) => width.value === selectedWidth.value
-      );
-      if (isExists) {
-        state.activeWidth = selectedWidth;
-      } else {
-        console.error('허용하지 않는 타입입니다.');
-      }
+      state.activeWidth = action.payload;
     },
   },
 });

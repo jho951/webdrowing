@@ -6,10 +6,11 @@ import { selectActiveColor } from '../redux/slice/colorSlice';
 import { selectActiveWidth } from '../redux/slice/widthSlice';
 
 import { getId } from '../util/get-id';
+import { clearCanvas } from '../util/reset-canvas';
 import { getCanvasPos } from '../util/get-canvas-pos.';
+import { getOverlayDesign } from '../util/get-overlay-design';
 
 import { ShapeMap } from '../feature/shape';
-import { clearCanvas } from '../util/reset-canvas';
 
 /**
  * @file useShapeOverlay.js
@@ -28,24 +29,12 @@ function useShapeOverlay(canvasRef, ctxRef) {
   const activeWidth = useSelector(selectActiveWidth);
   const [isPreviewing, setIsPreviewing] = useState(false);
 
-  const withDashedPreview = (fn) => {
-    const ctx = ctxRef.current;
-    if (!ctx) return;
-    ctx.save();
-    ctx.setLineDash([6, 6]);
-    fn();
-    ctx.restore();
-  };
-
-  const getTool = () => {
-    return ShapeMap[activeShape?.value] || null;
-  };
+  const tool = ShapeMap[activeShape?.value] || null;
 
   const onPointerDown = (e) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     if (e.cancelable) e.preventDefault();
 
-    const tool = getTool();
     if (!tool?.begin) return;
 
     const p = getCanvasPos(canvasRef.current, e);
@@ -59,7 +48,7 @@ function useShapeOverlay(canvasRef, ctxRef) {
     setIsPreviewing(true);
 
     clearCanvas(canvasRef, ctxRef);
-    withDashedPreview(() => {
+    getOverlayDesign(ctxRef, () => {
       tool.draw?.(
         ctxRef.current,
         p,
@@ -76,12 +65,12 @@ function useShapeOverlay(canvasRef, ctxRef) {
     if (!isPreviewing) return;
     if (e.cancelable) e.preventDefault();
 
-    const tool = getTool();
     if (!tool?.draw) return;
 
     const p = getCanvasPos(canvasRef.current, e);
     clearCanvas(canvasRef, ctxRef);
-    withDashedPreview(() => {
+
+    getOverlayDesign(ctxRef, () => {
       tool.draw(
         ctxRef.current,
         p,
@@ -96,7 +85,6 @@ function useShapeOverlay(canvasRef, ctxRef) {
     if (!isPreviewing) return;
     if (e?.cancelable) e.preventDefault();
 
-    const tool = getTool();
     if (!tool?.end) {
       setIsPreviewing(false);
       clearCanvas(canvasRef, ctxRef);

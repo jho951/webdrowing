@@ -3,23 +3,16 @@
  * @author YJH
  * @description 도형과 도구 색과 굵기
  */
-
-/**
- *
- */
 const INITIAL_WIDTH = Object.freeze({
   value: 3,
-  label: 'normal',
+  label: '3px',
 });
 
-/**
- *
- */
 const ALLOWED_WIDTH = Object.freeze([
   { value: 9, label: '9px' },
   { value: 7, label: '7px' },
   { value: 5, label: '5px' },
-  { value: 3, label: '3px' },
+  INITIAL_WIDTH,
   { value: 1, label: '1px' },
 ]);
 

@@ -2,8 +2,6 @@ import { useLayoutEffect, useRef } from 'react';
 import { setupCanvas } from '../../util/set-canvas';
 import { useBitmap } from '../../hook/useBitmap';
 
-import './bitmap.css';
-
 /**
  * @file BitmapCanvas.jsx
  * @author YJH
@@ -22,7 +20,7 @@ const BitmapCanvas = () => {
   return (
     <canvas
       ref={canvasRef}
-      className="bitmap-wrap"
+      className="bitmap"
       onPointerDown={handlers.onPointerDown}
       onPointerMove={handlers.onPointerMove}
       onPointerUp={handlers.onPointerUp}

@@ -17,7 +17,7 @@ const DashBoard = () => {
       {/* <TextCanvas />
       <ImageCanvas /> */}
       <ShapeOverlayCanvas />
-      {/* <AreaOverlayCanvas /> */}
+      {/* /* <AreaOverlayCanvas /> */}
     </section>
   );
 };
