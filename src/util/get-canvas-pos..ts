@@ -1,6 +1,9 @@
 /**
  * @file get-canvas-pos.js
  * @author YJH
+ */
+
+/**
  * @description 마우스 이벤트 좌표를 캔버스 내에서의 상대 좌표로 반환
  * @param {HTMLCanvasElement} canvas - 캔버스
  * @param {MouseEvent|PointerEvent} event - 포인터 이벤트
@@ -8,11 +11,14 @@
  * @returns {number} return.x - 캔버스 내 x 좌표
  * @returns {number} return.y - 캔버스 내 y 좌표
  */
-function getCanvasPos(canvas, e) {
+function getCanvasPos(
+  canvas: HTMLCanvasElement,
+  event: MouseEvent | PointerEvent
+) {
   const rect = canvas.getBoundingClientRect();
   return {
-    x: e.clientX - rect.left,
-    y: e.clientY - rect.top,
+    x: event.clientX - rect.left,
+    y: event.clientY - rect.top,
   };
 }
 export { getCanvasPos };

@@ -1,8 +1,5 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { selectActiveTool } from '../redux/slice/toolSlice';
-import { selectActiveColor } from '../redux/slice/colorSlice';
-import { selectActiveWidth } from '../redux/slice/widthSlice';
 
 import { ToolMap } from '../feature/tools';
 import { getCanvasPos } from '../util/get-canvas-pos.';

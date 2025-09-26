@@ -5,18 +5,10 @@
  */
 import { useDispatch, useSelector } from 'react-redux';
 
-import { setTool } from '../../redux/slice/toolSlice';
-import { setShape } from '../../redux/slice/shapeSlice';
-import { setColor } from '../../redux/slice/colorSlice';
-import { setWidth } from '../../redux/slice/widthSlice';
-
 import { TOOL } from '../../constant/tool';
 import { SHAPE } from '../../constant/shape';
 import { COLOR } from '../../constant/color';
 import { WIDTH } from '../../constant/width';
-
-import TypeWrap from '../typeWrap/TypeWrap';
-import FileInput from '../fileInput/FileInput';
 
 const ToolBar = () => {
   const dispatch = useDispatch();
@@ -31,7 +23,7 @@ const ToolBar = () => {
 
   return (
     <header id="header" className="toolbar-wrap">
-      <FileInput />
+      <FileInpuy />
 
       {/* 도구 선택 */}
       <TypeWrap

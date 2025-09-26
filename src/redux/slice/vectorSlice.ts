@@ -2,7 +2,6 @@
  * @file drawSlice.ts
  * @author YJH
  */
-
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 type Shape =

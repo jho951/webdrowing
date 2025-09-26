@@ -1,9 +1,6 @@
 import { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addShape } from '../redux/slice/vectorSlice';
-import { selectActiveShape } from '../redux/slice/shapeSlice';
-import { selectActiveColor } from '../redux/slice/colorSlice';
-import { selectActiveWidth } from '../redux/slice/widthSlice';
 
 import { getId } from '../util/get-id';
 import { clearCanvas } from '../util/reset-canvas';

@@ -11,14 +11,12 @@
     "sourceType": "module",
     "ecmaFeatures": { "jsx": true }
   },
+
   "plugins": ["react", "react-hooks", "import"],
   "settings": {
-    "react": { "version": "detect" },
-    "import/resolver": {
-      "alias": {
-        "map": [["@", "./src"]],
-        "extensions": [".js", ".jsx", ".json"]
-      }
+    "typescript": {},
+    "node": {
+      "paths": ["src"]
     }
   },
   "extends": ["eslint:recommended", "plugin:react/recommended", "prettier"],
