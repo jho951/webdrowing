@@ -7,12 +7,11 @@ const INITIAL_TOOL = Object.freeze({
   kind: 'tool',
   value: 'brush',
   label: '붓',
-  cursor: 'crosshair',
 });
 
 const ALLOWED_TOOL = Object.freeze([
-  { kind: 'tool', value: 'brush', label: '붓', cursor: 'crosshair' },
-  { kind: 'tool', value: 'eraser', label: '지우개', cursor: 'crosshair' },
+  { kind: 'tool', value: 'brush', label: '붓' },
+  { kind: 'tool', value: 'eraser', label: '지우개' },
 ]);
 
 export const TOOL = { INITIAL_TOOL, ALLOWED_TOOL };

@@ -1,4 +1,4 @@
-import DashBoard from '@/component/dashBoard/DashBoard';
+import DashBoard from './component/dashBoard/DashBoard';
 
 function App() {
   return (

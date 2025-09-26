@@ -5,25 +5,15 @@
  */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-type Tool =
-  | 'brush'
-  | 'eraser'
-  | 'line'
-  | 'rect'
-  | 'circle'
-  | 'curve'
-  | 'text'
-  | 'image'
-  | 'edit';
-
+type Tool = string;
 const toolSlice = createSlice({
   name: 'tool',
-  initialState: { active: 'select' as Tool },
+  initialState: { active: 'brush' as Tool },
   reducers: {
-    setDraw(state, action: PayloadAction<Tool>) {
+    setTool(state, action: PayloadAction<Tool>) {
       state.active = action.payload;
     },
   },
 });
-export const { setDraw } = toolSlice.actions;
+export const { setTool } = toolSlice.actions;
 export default toolSlice.reducer;
