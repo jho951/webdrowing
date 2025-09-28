@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { setImageSrc } from '../../redux/slice/imageSlice';
+
 
 import './fileInput.css';
 

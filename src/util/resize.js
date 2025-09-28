@@ -1,4 +1,4 @@
-import { setupCanvas } from './set-canvas';
+import { setupCanvas } from './canvas/setup-canvas';
 
 function resizeBitmapLayer(bitmapCanvas, nextCssW, nextCssH, dpr) {
   const prevW = bitmapCanvas.width;

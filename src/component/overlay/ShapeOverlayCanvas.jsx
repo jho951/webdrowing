@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef } from 'react';
-import { setupCanvas } from '../../util/set-canvas';
+import { setupCanvas } from '../../util/canvas/setup-canvas';
 import { useShapeOverlay } from '../../hook/useShapeOverlay';
 
 /**

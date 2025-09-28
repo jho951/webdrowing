@@ -1,4 +1,7 @@
-import { Middleware } from '@reduxjs/toolkit';
+/**
+ * @file historyOrchestrator.js
+ * @author YJH
+ */
 import {
   pushSnapshot,
   redo,
@@ -14,7 +17,7 @@ import { bitmapHistory } from '@/util/bitmap-history';
 /**
  * @description 어떤 액션을 추적할지 정의
  */
-const TRACKED_TYPES = new Set<string>([
+const TRACKED_TYPES = new Set([
   'vector/addShape',
   'vector/updateShape',
   'vector/removeShape',
@@ -29,11 +32,9 @@ const TRACKED_TYPES = new Set<string>([
 ]);
 
 /**
- * @description
- * @param store
- * @returns
+ * @description 히스토리 미들웨어
  */
-const historyOrchestrator: Middleware = (store) => (next) => (action: any) => {
+const historyOrchestrator = (store) => (next) => (action) => {
   const out = next(action);
 
   if (TRACKED_TYPES.has(action.type)) {
@@ -60,6 +61,7 @@ const historyOrchestrator: Middleware = (store) => (next) => (action: any) => {
     if (action.type === undo.type) history.undo();
     if (action.type === redo.type) history.redo();
   }
+
   return out;
 };
 

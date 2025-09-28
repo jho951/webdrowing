@@ -9,15 +9,15 @@
  * @returns
  */
 function bitmapHistory(limitDefault = 10) {
-  let canvas: HTMLCanvasElement | null = null;
-  let ctx: CanvasRenderingContext2D | null = null;
-  let stack: ImageBitmap[] = [];
+  let canvas = null;
+  let ctx = null;
+  let stack=[];
   let index = -1;
   let limit = limitDefault;
 
   const init = (
-    c: HTMLCanvasElement,
-    context: CanvasRenderingContext2D,
+    c,
+    context,
     limit = limitDefault
   ) => {
     canvas = c;

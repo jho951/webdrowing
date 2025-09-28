@@ -1,5 +1,5 @@
 /**
- * @file DashBoard.jsx
+ * @file DashBoard.tsx
  * @author YJH
  */
 import { useRef } from 'react';
@@ -11,28 +11,29 @@ import HandleLayer from '@/component/handler/HandleLayer';
 import './dashBoard.css';
 
 /**
- *  @description 비트맵, 벡터, 오버레이 3층으로 구성된 대시보드
+ *  @description 비트맵, 벡터, 오버레이 3겹 + 핸들 레이어
  */
 const DashBoard = () => {
-  const bitmapRef = useRef<HTMLCanvasElement>(null);
-  const vectorRef = useRef<HTMLCanvasElement>(null);
-  const overlayRef = useRef<HTMLCanvasElement>(null);
-  const handlerRef = useRef<HTMLDivElement>(null);
+  const bitmapRef  = useRef(null);
+  const vectorRef  = useRef(null);
+  const overlayRef = useRef(null);
+  const handlerRef = useRef(null);
 
   return (
-    <section className="dasboard">
+    <section className="dashboard">
       <canvas className="bitmap" ref={bitmapRef} />
       <canvas className="vector" ref={vectorRef} />
+
       <Bitmap targetRef={bitmapRef} />
       <Vector targetRef={vectorRef} />
-      {/* <Overlay
+
+      <Overlay
         className="overlay"
         bitmapRef={bitmapRef}
         vectorRef={vectorRef}
         overlayRef={overlayRef}
-        handlerRef={handlerRef}
-        ref={overlayRef}
-      /> */}
+        ref={overlayRef}    
+      />
       <HandleLayer className="handler" ref={handlerRef} />
     </section>
   );

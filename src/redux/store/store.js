@@ -1,5 +1,5 @@
 /**
- * @file store.ts
+ * @file store.js
  * @author YJH
  */
 import { configureStore } from '@reduxjs/toolkit';
@@ -22,6 +22,4 @@ const store = configureStore({
     getDefault({ serializableCheck: false }).concat(historyOrchestrator),
 });
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
-export { store };
+export {store}

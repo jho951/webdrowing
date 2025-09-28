@@ -11,12 +11,18 @@
     "sourceType": "module",
     "ecmaFeatures": { "jsx": true }
   },
-
   "plugins": ["react", "react-hooks", "import"],
   "settings": {
-    "typescript": {},
-    "node": {
-      "paths": ["src"]
+    "react": {
+      "version": "detect"
+    },
+    "import/resolver": {
+      "alias": {
+        "map": [
+          ["@", "./src"]
+        ],
+        "extensions": [".js", ".jsx", ".json"]
+      }
     }
   },
   "extends": ["eslint:recommended", "plugin:react/recommended", "prettier"],
@@ -29,6 +35,7 @@
     "react-hooks/exhaustive-deps": "warn",
 
     "import/no-unresolved": "error",
+
     "no-unused-vars": [
       "warn",
       { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
