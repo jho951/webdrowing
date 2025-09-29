@@ -4,7 +4,7 @@
  */
 import { useRef } from 'react';
 import Bitmap from '../bitmap/Bitmap';
-import Handler from '../handler/handler';
+import Handler from '../handler/Handler';
 
 import './dashboard.css';
 
@@ -13,10 +13,12 @@ import './dashboard.css';
  */
 function DashBoard() {
   const bitmapRef = useRef(null);
+  const vectorRef = useRef(null);
 
   return (
     <section className="dashboard">
       <canvas className="bitmap" ref={bitmapRef} />
+      <canvas className="vector" ref={vectorRef} />
       <Bitmap canvasRef={bitmapRef} />
       <Handler bitmapRef={bitmapRef} />
     </section>

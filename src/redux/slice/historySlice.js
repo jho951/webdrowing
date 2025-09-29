@@ -24,17 +24,23 @@ const historySlice = createSlice({
 export const { updateHistoryState, resetHistory } = historySlice.actions;
 export default historySlice.reducer;
 
-// ✅ thunk
-export const pushSnapshot = () => async (dispatch) => {
+/* ────────────────
+ * Thunks
+ * ──────────────── */
+
+// ✅ 비트맵 현재 상태를 스냅샷으로 저장
+export const pushBitmapSnapshot = () => async (dispatch) => {
   await bitmapHistory().snapshot();
   dispatch(updateHistoryState());
 };
 
+// ✅ Undo
 export const undoBitmap = () => (dispatch) => {
   bitmapHistory().undo();
   dispatch(updateHistoryState());
 };
 
+// ✅ Redo
 export const redoBitmap = () => (dispatch) => {
   bitmapHistory().redo();
   dispatch(updateHistoryState());

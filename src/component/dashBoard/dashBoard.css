@@ -1,25 +1,45 @@
+/* dashboard.css */
 .dashboard {
-  width: 800px;
-  height: 600px;
   position: relative;
-  background-color: var(--background-color);
-  border-radius: var(--default-figure);
-  box-shadow: var(--box-shadow);
-  margin: var(--default-figure);
+  width: 100%;
+  height: 100%;
+  /* 필요시 고정 비율 박스: aspect-ratio: 16 / 9; */
   overflow: hidden;
-  z-index: calc(var(--z-index) + 1);
+  background: var(--canvas-bg, #fff);
 }
-.dashboard canvas {
+
+/* 공통: 캔버스 3장은 같은 위치/크기 */
+.dashboard canvas.bitmap,
+.dashboard canvas.vector,
+.dashboard canvas.overlay {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   display: block;
-  position: absolute;
-  inset: 0;
-
-  touch-action: none;
 }
 
-.dashboard .bitmap {
-  pointer-events: auto;
-  z-index: calc(var(--z-index) + 2);
+/* z-index & 이벤트 정책 */
+.dashboard canvas.bitmap {
+  z-index: 10;
+  pointer-events: none;        /* 그리기 입력은 Overlay가 처리 */
+}
+
+.dashboard canvas.vector {
+  z-index: 20;
+  pointer-events: none;        /* 클릭/드래그는 Overlay로 라우팅 */
+}
+
+.dashboard canvas.overlay {
+  z-index: 30;
+  pointer-events: auto;        /* 모든 포인터 입력은 여기서 */
+  cursor: crosshair;           /* 필요 시 도구별 커서 교체 */
+}
+
+/* Handler는 HTML 상호작용 오버레이 */
+.dashboard .handler {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;        /* 내부 특정 요소만 pointer-events: auto */
 }

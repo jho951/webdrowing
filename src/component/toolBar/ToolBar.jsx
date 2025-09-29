@@ -7,6 +7,7 @@ import {
   redoBitmap as redo,
 } from '../../redux/slice/historySlice';
 import { setSelection } from '../../redux/slice/selectSlice';
+
 import { DRAW } from '../../constant/draw';
 import { STYLE } from '../../constant/style';
 import './toolbar.css';

@@ -3,7 +3,8 @@ import { useDispatch } from 'react-redux';
 
 import { setupCanvas } from '../../util/setup-canvas';
 import { bitmapHistory } from '../../util/bitmap-history';
-import { pushSnapshot } from '../../redux/slice/historySlice';
+import { pushBitmapSnapshot } from '../../redux/slice/historySlice';
+
 
 function Bitmap({ canvasRef }) {
   const dispatch = useDispatch();
@@ -15,7 +16,7 @@ function Bitmap({ canvasRef }) {
     const h = bitmapHistory();
     h.init(canvas, ctx, 10);
     h.resetToEmpty();
-    dispatch(pushSnapshot);
+    dispatch(pushBitmapSnapshot);
   }, [canvasRef, dispatch]);
   return null;
 }

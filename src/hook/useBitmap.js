@@ -1,14 +1,14 @@
 import { useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
+import { pushBitmapSnapshot } from '../redux/slice/historySlice';
 
+import { ToolMap } from '../feature';
 import { DRAW } from '../constant/draw';
 import { getCanvasPos } from '../util/get-canvas-pos';
-import { pushBitmapSnapshot } from '../redux/slice/historySlice';
-import { ToolMap } from '../feature';
 
 function useBitmap(canvasRef, ctxRef, { tool, color, width }) {
-  const [isDrawing, setIsDrawing] = useState(false);
   const dispatch = useDispatch();
+  const [isDrawing, setIsDrawing] = useState(false);
 
   const colorHex =
     typeof color === 'object' ? color?.value || '#000000' : color || '#000000';
@@ -30,7 +30,7 @@ function useBitmap(canvasRef, ctxRef, { tool, color, width }) {
       if (!impl) return;
 
       if (tool === 'brush') impl.begin(ctx, p, widthPx, colorHex);
-      else /* eraser */ impl.begin(ctx, p, widthPx);
+      else impl.begin(ctx, p, widthPx);
 
       setIsDrawing(true);
       canvas.setPointerCapture?.(e.pointerId);

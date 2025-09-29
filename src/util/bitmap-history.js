@@ -1,86 +1,119 @@
 /**
  * @file bitmap-history.js
  * @author YJH
+ * @description 간단/동기 버전: ImageData 기반 undo/redo
  */
 
 import { HISTORY } from '../constant/history';
+import { resetCanvas } from './reset-canvas';
 
-/**
- * @desciption 비트맵 캔버스 히스토리 스택 (undo/redo)
- * - createImageBitmap 미지원 대비 데이터URL 폴백 포함
- * - init(canvas, ctx, limit) 시 limit 정상 반영 (스코프 버그 수정)
- * - HISTORY 상수 오타 수정(HISYORY -> HISTORY). 상수 없을 경우 10으로 기본값 처리
- * @param {*} limitDefault
- * @returns
- */
 function makeBitmapHistory(limitDefault = HISTORY.DEFAULT_LIMIT) {
-  let canvas = null;
-  let ctx = null;
-  let stack = [];
-  let index = -1;
-  let limit = limitDefault;
+  const state = {
+    ...HISTORY.STATE,
+    stack: [],
+    limit: HISTORY.DEFAULT_LIMIT, 
+  };
+
+  /**
+   * init: 최초 baseline 스냅샷을 stack[0]에 기록 (current|empty)
+   */
+  const init = (canvasRef, ctxRef, limitArg, options = {}) => {
+    state.canvas = canvasRef;
+    state.ctx = ctxRef;
+    state.limit = Number.isFinite(limitArg) ? Number(limitArg) : limitDefault;
+
+    clear();
+
+    const baseline = options?.baseline === 'empty' ? 'empty' : 'current';
+    const base =
+      baseline === 'empty' ? _makeEmptyImageData() : _takeImageData();
+
+    if (base) {
+      state.stack.push(base);
+      state.index = 0;
+    }
+  };
+
+
+  const _width = () => state.canvas?.width ?? 0;
+  const _height = () => state.canvas?.height ?? 0;
 
   const clear = () => {
-    stack = [];
-    index = -1;
+    state.stack = [];
+    state.index = -1;
   };
 
-  const init = (canvasEl, ctx2d, limitArg) => {
-    canvas = canvasEl || null;
-    ctx = ctx2d || null;
-    limit = Number.isFinite(limitArg) ? Number(limitArg) : limitDefault;
-    clear();
-  };
 
-  const _saveFromDataURL = async () => {
-    const url = canvas.toDataURL('image/png');
-    const img = new Image();
-    img.src = url;
-    await img.decode?.();
-    return img;
-  };
-
-  const _makeSnapshotBitmap = async () => {
-    if (typeof createImageBitmap === 'function') {
-      return await createImageBitmap(canvas);
+  const _takeImageData = () => {
+    const { ctx } = state;
+    const w = _width(), h = _height();
+    if (!ctx || !w || !h) return null;
+    try {
+      return ctx.getImageData(0, 0, w, h);
+    } catch {
+      return null; 
     }
-    return _saveFromDataURL();
   };
 
-  const snapshot = async () => {
-    if (!canvas) return;
-    const bmp = await _makeSnapshotBitmap();
-    stack.splice(index + 1);
-    stack.push(bmp);
-    if (stack.length > limit) stack.shift();
-    index = stack.length - 1;
+  const _makeEmptyImageData = () => {
+    const { ctx } = state;
+    const w = _width(), h = _height();
+    if (!ctx || !w || !h) return null;
+    return ctx.createImageData(w, h); // 완전 투명한 빈 스냅샷
   };
 
-  const canUndo = () => index > 0;
-  const canRedo = () => index >= 0 && index < stack.length - 1;
-
-  const _draw = (bmp) => {
-    if (!ctx || !canvas || !bmp) return;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(bmp, 0, 0);
+  const _draw = (imgData) => {
+    const { ctx } = state;
+    if (!ctx || !imgData) return;
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0); // 변환 초기화
+    ctx.putImageData(imgData, 0, 0);
+    ctx.restore();
   };
+
+
+  const snapshot = () => {
+    if (!state.canvas) return;
+    const snap = _takeImageData();
+    if (!snap) return;
+    state.stack.splice(state.index + 1);
+    state.stack.push(snap);
+    if (state.stack.length > state.limit) {
+      state.stack.shift();
+    }
+    state.index = state.stack.length - 1;
+  };
+
+  const canUndo = () => state.index > 0;
+  const canRedo = () => state.index >= 0 && state.index < state.stack.length - 1;
 
   const undo = () => {
     if (!canUndo()) return;
-    index -= 1;
-    _draw(stack[index]);
+    state.index -= 1;
+    _draw(state.stack[state.index]);
   };
 
   const redo = () => {
     if (!canRedo()) return;
-    index += 1;
-    _draw(stack[index]);
+    state.index += 1;
+    _draw(state.stack[state.index]);
   };
 
+  /**
+   * resetToEmpty: 캔버스를 비우고, 그 빈 상태를 새로운 baseline으로 설정
+   */
   const resetToEmpty = () => {
+    const { ctx, canvas } = state;
     if (!ctx || !canvas) return;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    resetCanvas({ current: canvas }, ctx); // 실제 캔버스 지우기
     clear();
+
+    const empty = _makeEmptyImageData();
+    if (empty) {
+      state.stack.push(empty);
+      state.index = 0;
+    }
   };
 
   return { init, snapshot, canUndo, canRedo, undo, redo, resetToEmpty };
