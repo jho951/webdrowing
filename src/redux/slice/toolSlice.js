@@ -1,23 +1,21 @@
-/**
- * @file toolSlice.js
- * @author YJH
- */
 import { createSlice } from '@reduxjs/toolkit';
+import { DRAW } from '../../constant/draw';
 
-/**
- * @description 상태만 관리
- */
-const initialState = { active: 'brush' };
+const initialState = { active: DRAW.TOOL.INITIAL_TOOL.value };
 
 const toolSlice = createSlice({
   name: 'tool',
   initialState,
   reducers: {
     setTool(state, action) {
-      state.active = action.payload;
+      const v = String(action.payload);
+      if (DRAW.isAllowedValue(v)) state.active = v;
+    },
+    resetTool(state) {
+      state.active = DRAW.TOOL.INITIAL_TOOL.value;
     },
   },
 });
 
-export const { setTool } = toolSlice.actions;
+export const { setTool, resetTool } = toolSlice.actions;
 export default toolSlice.reducer;

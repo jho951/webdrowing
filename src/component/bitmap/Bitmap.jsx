@@ -3,20 +3,20 @@
  * @author YJH
  */
 import { useLayoutEffect } from 'react';
-import { setupCanvas } from '../../util/canvas/setup-canvas';
-import { bitmapHistory } from '../../util/bitmap/bitmap-history';
+import { setupCanvas } from '../../util/setup-canvas';
+import { bitmapHistory } from '../../util/bitmap-history';
 
 /**
  * @description 비트맵 기반 캔버스
  */
-const Bitmap = ({ targetRef }) => {
+function Bitmap({ targetRef }) {
   useLayoutEffect(() => {
-    if (!targetRef || !targetRef.current) return;
-    const ctx = setupCanvas(targetRef.current);
-    bitmapHistory().init(targetRef.current, ctx, 10);
+    const canvas = targetRef?.current;
+    if (!canvas) return;
+    const ctx = setupCanvas(canvas);
+    bitmapHistory().init(canvas, ctx, 10);
   }, [targetRef]);
-
   return null;
-};
+}
 
 export default Bitmap;

@@ -4,16 +4,9 @@
 
  */
 import { useRef, useState, useMemo, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
 import { ShapeMap } from '../feature';
-import { getCanvasPos } from '../util/canvas/get-canvas-pos';
-import { resetCanvas } from '../util/canvas/reset-canvas';
-import { getOverlayDesign } from '../util/get-overlay-design';
-import { addShape } from '../redux/slice/vectorSlice';
-import { getId } from '../util/get-id';
-
-const SHAPE_TOOLS = ['circle', 'rect', 'line', 'curve'];
+import { getCanvasPos } from '../util/get-canvas-pos';
 
 /**
  * @description 벡터 오버레이(미리보기) - tool(active) + selection(color/width) 기반
@@ -26,35 +19,33 @@ const SHAPE_TOOLS = ['circle', 'rect', 'line', 'curve'];
  * @param {*} state
  * @returns
  */
+
+const SHAPE_TOOLS = ['circle', 'rect', 'line', 'curve'];
+
 function callShapeMethod(key, method, ctx, p, width, color, state) {
   const shape = ShapeMap?.[key];
   if (!shape?.[method]) return;
-  // curve만 (ctx, p, color, width, state)
   if (key === 'curve') return shape[method](ctx, p, color, width, state);
-  // 나머지는 (ctx, p, width, color, state)
   return shape[method](ctx, p, width, color, state);
 }
 
-export function useShapeOverlay(canvasRef, ctxRef) {
-  const dispatch = useDispatch();
-
-  const activeTool = useSelector((s) => s.tool.active);
-
-  // selection 슬라이스에서 색/굵기 읽기 ({value,label}일 수도 있어 정규화)
-  const rawColor = useSelector((s) => s.selection?.color);
-  const rawWidth = useSelector((s) => s.selection?.width);
-  const activeColor = typeof rawColor === 'object' ? rawColor?.value : rawColor;
-  const activeWidth = typeof rawWidth === 'object' ? rawWidth?.value : rawWidth;
-
+function useShapeOverlay(canvasRef, ctxRef, { tool, color, width, onCommit }) {
   const [isPreviewing, setIsPreviewing] = useState(false);
   const toolStateRef = useRef({});
   const lastPointRef = useRef(null);
 
-  const isShapeMode = SHAPE_TOOLS.includes(activeTool);
+  const isShapeMode = SHAPE_TOOLS.includes(tool);
   const shapeKey = useMemo(
-    () => (isShapeMode ? activeTool : null),
-    [isShapeMode, activeTool]
+    () => (isShapeMode ? tool : null),
+    [isShapeMode, tool]
   );
+
+  const clearOverlay = useCallback(() => {
+    const canvas = canvasRef.current;
+    const ctx = ctxRef.current;
+    if (!canvas || !ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }, [canvasRef, ctxRef]);
 
   const onPointerDown = useCallback(
     (e) => {
@@ -74,28 +65,25 @@ export function useShapeOverlay(canvasRef, ctxRef) {
         'begin',
         ctx,
         p,
-        activeWidth,
-        activeColor,
+        width,
+        color,
         toolStateRef.current
       );
       setIsPreviewing(true);
 
-      resetCanvas(canvasRef, ctxRef);
-      getOverlayDesign(ctxRef, () => {
-        callShapeMethod(
-          shapeKey,
-          'draw',
-          ctx,
-          p,
-          activeWidth,
-          activeColor,
-          toolStateRef.current
-        );
-      });
-
+      clearOverlay();
+      callShapeMethod(
+        shapeKey,
+        'draw',
+        ctx,
+        p,
+        width,
+        color,
+        toolStateRef.current
+      );
       canvas.setPointerCapture?.(e.pointerId);
     },
-    [isShapeMode, shapeKey, canvasRef, ctxRef, activeWidth, activeColor]
+    [isShapeMode, shapeKey, canvasRef, ctxRef, width, color, clearOverlay]
   );
 
   const onPointerMove = useCallback(
@@ -110,18 +98,16 @@ export function useShapeOverlay(canvasRef, ctxRef) {
       const p = getCanvasPos(canvas, e.nativeEvent);
       lastPointRef.current = p;
 
-      resetCanvas(canvasRef, ctxRef);
-      getOverlayDesign(ctxRef, () => {
-        callShapeMethod(
-          shapeKey,
-          'draw',
-          ctx,
-          p,
-          activeWidth,
-          activeColor,
-          toolStateRef.current
-        );
-      });
+      clearOverlay();
+      callShapeMethod(
+        shapeKey,
+        'draw',
+        ctx,
+        p,
+        width,
+        color,
+        toolStateRef.current
+      );
     },
     [
       isPreviewing,
@@ -129,8 +115,9 @@ export function useShapeOverlay(canvasRef, ctxRef) {
       shapeKey,
       canvasRef,
       ctxRef,
-      activeWidth,
-      activeColor,
+      width,
+      color,
+      clearOverlay,
     ]
   );
 
@@ -149,34 +136,32 @@ export function useShapeOverlay(canvasRef, ctxRef) {
       const p = e
         ? getCanvasPos(canvas, e.nativeEvent)
         : (lastPointRef.current ?? { x: 0, y: 0 });
-
       const result = callShapeMethod(
         shapeKey,
         'end',
         ctx,
         p,
-        activeWidth,
-        activeColor,
+        width,
+        color,
         toolStateRef.current
       );
 
       setIsPreviewing(false);
-      resetCanvas(canvasRef, ctxRef);
+      clearOverlay();
 
       if (result?.pending) return;
-
-      if (result?.shape) {
-        dispatch(addShape({ id: getId(), ...result.shape }));
-      }
+      if (result?.shape && typeof onCommit === 'function')
+        onCommit(result.shape);
     },
     [
       isPreviewing,
       shapeKey,
       canvasRef,
       ctxRef,
-      activeWidth,
-      activeColor,
-      dispatch,
+      width,
+      color,
+      clearOverlay,
+      onCommit,
     ]
   );
 
@@ -188,3 +173,5 @@ export function useShapeOverlay(canvasRef, ctxRef) {
     onPointerCancel: endPreview,
   };
 }
+
+export { useShapeOverlay };

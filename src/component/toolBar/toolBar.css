@@ -1,9 +1,108 @@
-.tool-btn {
-  margin: 0;
-  padding: 0;
-  border: none;
-  background-color: transparent;
-
-  cursor: pointer;
+.toolbar-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 6px 10px;
+  border-bottom: 1px solid #ccc;
+  background: #f8f8f8;
   user-select: none;
+  font-family: sans-serif;
+}
+.toolbar-left {
+  display: flex;
+  gap: 20px;
+}
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.section-title {
+  font-size: 12px;
+  font-weight: bold;
+  color: #444;
+}
+.section-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tool-btn {
+  min-width: 32px;
+  min-height: 28px;
+  padding: 4px 8px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+.tool-btn:hover {
+  background: #f0f0f0;
+}
+.tool-btn.active {
+  border-color: #0078d7;
+  background: #e6f2fb;
+}
+
+/* 색상 버튼 */
+.btn-group .tool-btn {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+}
+.btn-group .tool-btn[style]::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+/* 두께 버튼 */
+.tool-btn.thickness {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tool-btn.thickness::before {
+  content: '';
+  display: block;
+  width: 18px;
+  border-radius: 2px;
+  background: #333;
+}
+.tool-btn.thickness[data-width='1']::before {
+  height: 1px;
+}
+.tool-btn.thickness[data-width='3']::before {
+  height: 3px;
+}
+.tool-btn.thickness[data-width='5']::before {
+  height: 5px;
+}
+.tool-btn.thickness[data-width='7']::before {
+  height: 7px;
+}
+
+.history-ctrl {
+  display: flex;
+  gap: 6px;
 }

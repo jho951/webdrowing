@@ -10,13 +10,11 @@
   overflow: hidden;
   z-index: calc(var(--z-index) + 1);
 }
-
 .dashboard canvas {
   position: absolute;
   inset: 0;
   display: block;
 }
-
 .bitmap {
   z-index: calc(var(--z-index) + 2);
 }
@@ -30,4 +28,5 @@
   position: absolute;
   inset: 0;
   z-index: calc(var(--z-index) + 5);
+  pointer-events: auto;
 }

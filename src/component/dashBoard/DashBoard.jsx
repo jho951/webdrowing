@@ -14,7 +14,7 @@ import './dashboard.css';
 /**
  *  @description 비트맵, 벡터, 오버레이 3겹 + 핸들 레이어
  */
-const DashBoard = () => {
+function DashBoard() {
   const bitmapRef = useRef(null);
   const vectorRef = useRef(null);
   const overlayRef = useRef(null);
@@ -29,15 +29,15 @@ const DashBoard = () => {
       <Bitmap targetRef={bitmapRef} />
       <Vector targetRef={vectorRef} />
       <Overlay targetRef={overlayRef} />
+
       <HandleLayer
         className="handler"
         ref={handlerRef}
         bitmapRef={bitmapRef}
-        vectorRef={vectorRef}
         overlayRef={overlayRef}
       />
     </section>
   );
-};
+}
 
 export default DashBoard;

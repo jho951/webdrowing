@@ -1,8 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
-  shapes: [],
-};
+const initialState = { shapes: [] };
 
 const vectorSlice = createSlice({
   name: 'vector',

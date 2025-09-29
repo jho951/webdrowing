@@ -22,7 +22,6 @@ const textSlice = createSlice({
       state.texts = state.texts.filter((t) => t.id !== id);
     },
     replaceAll(state, action) {
-      // payload: { texts: [...] } 전체 치환
       return action.payload && typeof action.payload === 'object'
         ? { ...action.payload }
         : state;

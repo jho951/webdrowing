@@ -3,12 +3,14 @@
  * @author YJH
  */
 
+import { HISYORY } from '../constant/history';
+
 /**
  * @description 비트맵 기반 데이터 스택 저장 유틸
  * @param limitDefault
  * @returns
  */
-function bitmapHistory(limitDefault) {
+function bitmapHistory(limitDefault = HISYORY.DEFAULT_LIMIT) {
   let canvas = null;
   let ctx = null;
   let stack = [];

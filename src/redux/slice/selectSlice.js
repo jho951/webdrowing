@@ -1,25 +1,27 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { STYLE } from '../../constant/style';
 
 const initialState = {
-  color: '#000000',
-  width: 3,
-  rotate: 0,
-  scale: 1.0,
+  color: STYLE.INITIAL_COLOR.value,
+  width: STYLE.INITIAL_WIDTH.value,
 };
 
-const selectionSlice = createSlice({
+const selectSlice = createSlice({
   name: 'selection',
   initialState,
   reducers: {
     setSelection(state, action) {
       const p = action.payload || {};
-      if (p.key) state[p.key] = p.value;
-      if (p.color != null) state.color = p.color;
-      if (p.width != null) state.width = p.width;
-      if (p.scale != null) state.scale = p.scale;
-      if (p.rotate != null) state.rotate = p.rotate;
+      if (p.color != null) {
+        state.color = STYLE.isAllowedColor(p.color)
+          ? STYLE.resolveColor(p.color).value
+          : state.color;
+      }
+      if (p.width != null) {
+        state.width = STYLE.resolveWidth(p.width);
+      }
     },
-    clearSelection() {
+    resetSelection() {
       return { ...initialState };
     },
     replace(state, action) {
@@ -30,5 +32,5 @@ const selectionSlice = createSlice({
   },
 });
 
-export const { setSelection, clearSelection, replace } = selectionSlice.actions;
-export default selectionSlice.reducer;
+export const { setSelection, resetSelection, replace } = selectSlice.actions;
+export default selectSlice.reducer;

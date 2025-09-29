@@ -1,29 +1,19 @@
-/**
- * @file ToolBar.jsx
- * @author YJH
- */
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { setTool } from '../../redux/slice/toolSlice';
-import { setShape } from '../../redux/slice/shpeSlice';
+import { setShape } from '../../redux/slice/shapeSlice';
 import { undo, redo } from '../../redux/slice/historySlice';
 import { setSelection } from '../../redux/slice/selectSlice';
 
 import { DRAW } from '../../constant/draw';
 import { STYLE } from '../../constant/style';
-
 import './toolbar.css';
 
-/**
- * @desc Windows 그림판식 툴바
- * @returns
- */
 function ToolBar() {
   const dispatch = useDispatch();
-
   const activeTool = useSelector((s) => s.tool.active);
-  const activeShape = useSelector((s) => s.shape.active);
+  const activeShape = useSelector((s) => s.shape?.active);
   const color = useSelector((s) => s.selection.color);
   const width = useSelector((s) => s.selection.width);
 
@@ -37,19 +27,17 @@ function ToolBar() {
         typeof valueOrOption === 'string'
           ? valueOrOption
           : valueOrOption?.value;
-
       const target =
         ALL.find((o) => o.value === value) ??
         (typeof valueOrOption === 'object' ? valueOrOption : null);
-
       if (!target) return;
 
       const { tool, shape } = DRAW.reduceSelection(target, {
         tool: { kind: 'tool', value: activeTool, label: '' },
         shape: { kind: 'shape', value: activeShape, label: '' },
       });
-      dispatch(setTool(tool.value));
-      dispatch(setShape(shape.value));
+      if (tool?.value) dispatch(setTool(tool.value));
+      if (shape?.value) dispatch(setShape(shape.value));
     },
     [ALL, activeTool, activeShape, dispatch]
   );
@@ -76,10 +64,8 @@ function ToolBar() {
           t.isContentEditable)
       )
         return;
-
       const opt = DRAW.resolveHotkey(e.key);
       if (!opt) return;
-
       e.preventDefault();
       applyPick(opt.value);
     };
@@ -94,32 +80,30 @@ function ToolBar() {
           <ButtonGroup
             list={TOOL_ITEMS}
             active={activeTool}
-            onClick={(v) => applyPick(v)}
+            onClick={applyPick}
           />
         </Section>
-
         <Section title="도형">
           <ButtonGroup
             list={SHAPE_ITEMS}
             active={activeShape}
-            onClick={(v) => applyPick(v)}
+            onClick={applyPick}
           />
         </Section>
       </div>
 
       <div className="toolbar-right">
         <Section title="색">
-          <ButtonGroup
+          <ColorGroup
             list={STYLE.ALLOWED_COLOR}
-            value={color}
+            active={color}
             onClick={onPickColor}
           />
         </Section>
-
         <Section title="선 두께">
-          <ButtonGroup
+          <WidthGroup
             list={STYLE.ALLOWED_WIDTH}
-            value={width}
+            active={width}
             onClick={onPickWidth}
           />
         </Section>
@@ -166,6 +150,38 @@ function ButtonGroup({ list, active, onClick }) {
         >
           {o.label}
         </button>
+      ))}
+    </div>
+  );
+}
+
+function ColorGroup({ list, active, onClick }) {
+  return (
+    <div className="btn-group">
+      {list.map((o) => (
+        <button
+          key={o.value}
+          className={`tool-btn ${active === (o.value || o) ? 'active' : ''}`}
+          onClick={() => onClick(o.value || o)}
+          title={o.label || o.value}
+          style={{ color: o.value || o }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function WidthGroup({ list, active, onClick }) {
+  return (
+    <div className="btn-group">
+      {list.map((o) => (
+        <button
+          key={o.value}
+          className={`tool-btn thickness ${active === o.value ? 'active' : ''}`}
+          onClick={() => onClick(o.value)}
+          title={o.label}
+          data-width={o.value}
+        />
       ))}
     </div>
   );

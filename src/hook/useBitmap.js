@@ -3,87 +3,66 @@
  * @author YJH
  */
 import { useState, useCallback } from 'react';
-import { useSelector } from 'react-redux';
-
-import { getCanvasPos } from '../util/canvas/get-canvas-pos';
-import { DRAW } from '../constant/draw';
+import { getCanvasPos } from '../util/get-canvas-pos';
 import { ToolMap } from '../feature';
 
 /**
- * @description
+ *
  * @param {*} canvasRef
  * @param {*} ctxRef
+ * @param {*} param2
  * @returns
  */
-function useBitmap(canvasRef, ctxRef) {
-  const activeTool = useSelector((s) => s.tool.active);
-  const rawColor = useSelector((s) => s.selection?.color);
-  const rawWidth = useSelector((s) => s.selection?.width);
-
-  const activeColor =
-    typeof rawColor === 'object' ? rawColor?.value : (rawColor ?? '#000000');
-  const activeWidth =
-    typeof rawWidth === 'object' ? rawWidth?.value : (rawWidth ?? 3);
-
+function useBitmap(canvasRef, ctxRef, { tool, color, width }) {
   const [isDrawing, setIsDrawing] = useState(false);
+  const isBitmapTool = tool === 'brush' || tool === 'eraser';
 
   const onPointerDown = useCallback(
     (e) => {
+      if (!isBitmapTool) return;
       if (e.pointerType === 'mouse' && e.button !== 0) return;
       if (e.cancelable) e.preventDefault();
-
       const canvas = canvasRef.current;
       const ctx = ctxRef.current;
       if (!canvas || !ctx) return;
-      if (!DRAW.isBitmapTool(activeTool)) return;
 
       const p = getCanvasPos(canvas, e.nativeEvent);
-      const drawTool = ToolMap?.[activeTool];
-
+      const drawTool = ToolMap?.[tool];
       if (drawTool?.begin) {
-        drawTool.begin(ctx, p, activeWidth, activeColor);
+        drawTool.begin(ctx, p, width, color);
         setIsDrawing(true);
         canvas.setPointerCapture?.(e.pointerId);
       }
     },
-    [canvasRef, ctxRef, activeTool, activeWidth, activeColor]
+    [isBitmapTool, canvasRef, ctxRef, tool, color, width]
   );
 
   const onPointerMove = useCallback(
     (e) => {
-      if (!isDrawing) return;
+      if (!isDrawing || !isBitmapTool) return;
       if (e.cancelable) e.preventDefault();
-
       const canvas = canvasRef.current;
       const ctx = ctxRef.current;
       if (!canvas || !ctx) return;
-      if (!DRAW.isBitmapTool(activeTool)) return;
 
       const p = getCanvasPos(canvas, e.nativeEvent);
-      const drawTool = ToolMap?.[activeTool];
-
-      if (drawTool?.draw) {
-        drawTool.draw(ctx, p);
-      }
+      const drawTool = ToolMap?.[tool];
+      if (drawTool?.draw) drawTool.draw(ctx, p);
     },
-    [canvasRef, ctxRef, isDrawing, activeTool]
+    [isDrawing, isBitmapTool, canvasRef, ctxRef, tool]
   );
 
   const endDraw = useCallback(
     (e) => {
       if (!isDrawing) return;
       if (e?.cancelable) e.preventDefault();
-
       const ctx = ctxRef.current;
       if (!ctx) return;
-
-      const drawTool = ToolMap?.[activeTool];
-      if (drawTool?.end) {
-        drawTool.end(ctx);
-      }
+      const drawTool = ToolMap?.[tool];
+      if (drawTool?.end) drawTool.end(ctx);
       setIsDrawing(false);
     },
-    [ctxRef, isDrawing, activeTool]
+    [isDrawing, ctxRef, tool]
   );
 
   return {
@@ -95,4 +74,4 @@ function useBitmap(canvasRef, ctxRef) {
   };
 }
 
-export default useBitmap;
+export { useBitmap };
