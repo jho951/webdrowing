@@ -2,19 +2,14 @@
  * @file VectorCanvas.jsx
  * @author YJH
  */
-import React, { useLayoutEffect } from 'react';
-import { setupCanvas } from '@/util/canvas/setup-canvas';
-
-
-interface VectorProps {
-  targetRef: React.RefObject<HTMLCanvasElement | null>;
-}
+import { useLayoutEffect } from 'react';
+import { setupCanvas } from '../../util/canvas/setup-canvas';
 
 /**
  * @description 벡터 캔버스
  * @returns
  */
-const Vector: React.FC<VectorProps> = ({ targetRef }) => {
+const Vector = ({ targetRef }) => {
   useLayoutEffect(() => {
     if (!targetRef || !targetRef.current) return;
     const ctx = setupCanvas(targetRef.current);

@@ -1,6 +1,10 @@
+/**
+ * @file useCanvasReszie.js
+ * @author YJH
+ */
 import { useEffect, useRef, useState } from 'react';
 
-const useCanvasResize = (initialSize) => {
+function useCanvasResize(initialSize) {
   const [size, setSize] = useState(initialSize);
   const containerRef = useRef(null);
 
@@ -57,6 +61,6 @@ const useCanvasResize = (initialSize) => {
   }, []);
 
   return { size, containerRef };
-};
+}
 
 export { useCanvasResize };

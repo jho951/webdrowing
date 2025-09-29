@@ -1,7 +1,12 @@
-import { createSlice } from "@reduxjs/toolkit";
+/**
+ * @file toolSlice.js
+ * @author YJH
+ */
+import { createSlice } from '@reduxjs/toolkit';
 
-
-// active 도구 상태만 관리
+/**
+ * @description 상태만 관리
+ */
 const initialState = { active: 'brush' };
 
 const toolSlice = createSlice({
@@ -9,7 +14,7 @@ const toolSlice = createSlice({
   initialState,
   reducers: {
     setTool(state, action) {
-      state.active = action.payload; 
+      state.active = action.payload;
     },
   },
 });

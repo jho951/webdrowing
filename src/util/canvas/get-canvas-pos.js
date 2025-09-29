@@ -11,10 +11,11 @@
  * @returns {number} return.x - 캔버스 내 x 좌표
  * @returns {number} return.y - 캔버스 내 y 좌표
  */
- function getCanvasPos(canvas, e) {
+function getCanvasPos(canvas, e) {
   const rect = canvas.getBoundingClientRect();
 
-  let clientX, clientY;
+  let clientX;
+  let clientY;
   if (e && e.touches && e.touches[0]) {
     clientX = e.touches[0].clientX;
     clientY = e.touches[0].clientY;
@@ -26,8 +27,7 @@
     clientY = e.clientY;
   }
 
-  const dpr =
-    (typeof window !== 'undefined' && window.devicePixelRatio) || 1;
+  const dpr = (typeof window !== 'undefined' && window.devicePixelRatio) || 1;
 
   return {
     x: (clientX - rect.left) * dpr,
@@ -35,5 +35,4 @@
   };
 }
 
-
-export{getCanvasPos}
+export { getCanvasPos };

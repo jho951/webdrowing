@@ -1,6 +1,5 @@
 import { useDispatch } from 'react-redux';
 
-
 import './fileInput.css';
 
 const FileInput = () => {

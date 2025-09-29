@@ -4,7 +4,7 @@
   --background-color: #f5f5f5;
   --text-color: #333333;
   --overay-color: #808080;
-  --active-color: rgb(239, 255, 66);
+  --active-color: #efff42;
 
   --primary-color-rgb: 40, 79, 41;
   --border-color-rgb: 174, 168, 166;
@@ -69,4 +69,3 @@ header {
   opacity: 0;
   visibility: hidden;
 }
-

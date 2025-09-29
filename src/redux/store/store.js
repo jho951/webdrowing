@@ -4,22 +4,23 @@
  */
 import { configureStore } from '@reduxjs/toolkit';
 
-import tool from '@/redux/slice/toolSlice';
-import text from '@/redux/slice/textSlice';
-import image from '@/redux/slice/imageSlice';
-import vector from '@/redux/slice/vectorSlice';
-import history from '@/redux/slice/historySlice';
-import selection from '@/redux/slice/selectSlice';
+import tool from '../slice/toolSlice';
+import shape from '../slice/shpeSlice';
+import text from '../slice/textSlice';
+import image from '../slice/imageSlice';
+import vector from '../slice/vectorSlice';
+import history from '../slice/historySlice';
+import selection from '../slice/selectSlice';
 
-import { historyOrchestrator } from '@/redux/middleware/middleware';
+import { historyOrchestrator } from '../middleware/middleware';
 
 /**
  * @description 리덕스 스토어
  */
 const store = configureStore({
-  reducer: { tool, vector, text, image, selection, history },
+  reducer: { tool, shape, vector, text, image, selection, history },
   middleware: (getDefault) =>
     getDefault({ serializableCheck: false }).concat(historyOrchestrator),
 });
 
-export {store}
+export { store };

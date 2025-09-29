@@ -8,4 +8,6 @@ const HISTORY = Object.freeze({
   BUDGET_MB: 16,
   MAX_COUNT: 500,
 });
-export { HISTORY };
+
+const DEFAULT_LIMIT = 10;
+export const HISYORY = { HISTORY, DEFAULT_LIMIT };

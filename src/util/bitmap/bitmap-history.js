@@ -8,21 +8,17 @@
  * @param limitDefault
  * @returns
  */
-function bitmapHistory(limitDefault = 10) {
+function bitmapHistory(limitDefault) {
   let canvas = null;
   let ctx = null;
-  let stack=[];
+  let stack = [];
   let index = -1;
   let limit = limitDefault;
 
-  const init = (
-    c,
-    context,
-    limit = limitDefault
-  ) => {
-    canvas = c;
-    ctx = context;
-    limit = limit;
+  const init = (canvasRef, ctxRef, limit) => {
+    canvas = canvasRef;
+    ctx = ctxRef;
+    limit = 10;
     stack = [];
     index = -1;
   };

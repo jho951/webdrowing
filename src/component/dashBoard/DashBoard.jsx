@@ -3,19 +3,20 @@
  * @author YJH
  */
 import { useRef } from 'react';
-import Bitmap from '@/component/bitmap/Bitmap';
-import Vector from '@/component/vector/Vector';
-import Overlay from '@/component/overlay/Overlay';
-import HandleLayer from '@/component/handler/HandleLayer';
+import Bitmap from '../bitmap/Bitmap';
+import Vector from '../vector/Vector';
+import Overlay from '../overlay/Overlay';
 
-import './dashBoard.css';
+import HandleLayer from '../handler/HandleLayer';
+
+import './dashboard.css';
 
 /**
  *  @description 비트맵, 벡터, 오버레이 3겹 + 핸들 레이어
  */
 const DashBoard = () => {
-  const bitmapRef  = useRef(null);
-  const vectorRef  = useRef(null);
+  const bitmapRef = useRef(null);
+  const vectorRef = useRef(null);
   const overlayRef = useRef(null);
   const handlerRef = useRef(null);
 
@@ -23,18 +24,18 @@ const DashBoard = () => {
     <section className="dashboard">
       <canvas className="bitmap" ref={bitmapRef} />
       <canvas className="vector" ref={vectorRef} />
+      <canvas className="overlay" ref={overlayRef} />
 
       <Bitmap targetRef={bitmapRef} />
       <Vector targetRef={vectorRef} />
-
-      <Overlay
-        className="overlay"
+      <Overlay targetRef={overlayRef} />
+      <HandleLayer
+        className="handler"
+        ref={handlerRef}
         bitmapRef={bitmapRef}
         vectorRef={vectorRef}
         overlayRef={overlayRef}
-        ref={overlayRef}    
       />
-      <HandleLayer className="handler" ref={handlerRef} />
     </section>
   );
 };
