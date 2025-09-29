@@ -5,11 +5,12 @@
  * @param {HTMLCanvasElement|React.RefObject<HTMLCanvasElement>} canvasRef
  * @param {CanvasRenderingContext2D|React.RefObject<CanvasRenderingContext2D>} ctxRef
  */
-function resetCanvas(canvasRef, ctxRef) {
-  const canvas =
-    canvasRef && 'current' in canvasRef ? canvasRef.current : canvasRef;
-  const ctx = ctxRef && 'current' in ctxRef ? ctxRef.current : ctxRef;
+function resetCanvas(targetRef, ctx) {
+  const canvas = targetRef?.current;
   if (!canvas || !ctx) return;
+  ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.restore();
 }
 export { resetCanvas };

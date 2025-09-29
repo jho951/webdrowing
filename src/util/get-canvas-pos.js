@@ -12,6 +12,11 @@
  * @returns {number} return.y - 캔버스 내 y 좌표
  */
 function getCanvasPos(canvas, event) {
+  if (!canvas) {
+    console.warn('getCanvasPos called with null canvas');
+    return { x: 0, y: 0 };
+  }
+
   const rect = canvas.getBoundingClientRect();
   const x = event.clientX - rect.left;
   const y = event.clientY - rect.top;

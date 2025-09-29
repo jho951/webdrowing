@@ -63,4 +63,4 @@ function useCanvasResize(initialSize) {
   return { size, containerRef };
 }
 
-export { useCanvasResize };
+export default useCanvasResize;

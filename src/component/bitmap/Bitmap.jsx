@@ -1,21 +1,22 @@
-/**
- * @file BitmapCanvas.jsx
- * @author YJH
- */
 import { useLayoutEffect } from 'react';
+import { useDispatch } from 'react-redux';
+
 import { setupCanvas } from '../../util/setup-canvas';
 import { bitmapHistory } from '../../util/bitmap-history';
+import { pushSnapshot } from '../../redux/slice/historySlice';
 
-/**
- * @description 비트맵 기반 캔버스
- */
-function Bitmap({ targetRef }) {
+function Bitmap({ canvasRef }) {
+  const dispatch = useDispatch();
   useLayoutEffect(() => {
-    const canvas = targetRef?.current;
+    const canvas = canvasRef?.current;
     if (!canvas) return;
+
     const ctx = setupCanvas(canvas);
-    bitmapHistory().init(canvas, ctx, 10);
-  }, [targetRef]);
+    const h = bitmapHistory();
+    h.init(canvas, ctx, 10);
+    h.resetToEmpty();
+    dispatch(pushSnapshot);
+  }, [canvasRef, dispatch]);
   return null;
 }
 

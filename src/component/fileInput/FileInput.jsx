@@ -9,7 +9,6 @@ const FileInput = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     const url = URL.createObjectURL(file);
-    dispatch(setImageSrc(url));
   };
 
   return (

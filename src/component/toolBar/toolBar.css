@@ -3,8 +3,8 @@
   justify-content: space-between;
   align-items: flex-start;
   padding: 6px 10px;
-  border-bottom: 1px solid #ccc;
-  background: #f8f8f8;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--primary-color);
   user-select: none;
   font-family: sans-serif;
 }

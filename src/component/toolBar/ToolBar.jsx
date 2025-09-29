@@ -1,11 +1,12 @@
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
 import { setTool } from '../../redux/slice/toolSlice';
 import { setShape } from '../../redux/slice/shapeSlice';
-import { undo, redo } from '../../redux/slice/historySlice';
+import {
+  undoBitmap as undo,
+  redoBitmap as redo,
+} from '../../redux/slice/historySlice';
 import { setSelection } from '../../redux/slice/selectSlice';
-
 import { DRAW } from '../../constant/draw';
 import { STYLE } from '../../constant/style';
 import './toolbar.css';
@@ -16,6 +17,8 @@ function ToolBar() {
   const activeShape = useSelector((s) => s.shape?.active);
   const color = useSelector((s) => s.selection.color);
   const width = useSelector((s) => s.selection.width);
+  const canUndo = useSelector((s) => s.history?.canUndo);
+  const canRedo = useSelector((s) => s.history?.canRedo);
 
   const ALL = DRAW.MENU.TOOLBAR ?? DRAW.MENU.TOOL;
   const TOOL_ITEMS = ALL.filter(DRAW.isToolOption);
@@ -64,14 +67,33 @@ function ToolBar() {
           t.isContentEditable)
       )
         return;
+
+      // 기존: 도구 단축키
       const opt = DRAW.resolveHotkey(e.key);
-      if (!opt) return;
-      e.preventDefault();
-      applyPick(opt.value);
+      if (opt) {
+        e.preventDefault();
+        applyPick(opt.value);
+        return;
+      }
+
+      // 추가: 히스토리 단축키
+      const ctrl = e.ctrlKey || e.metaKey;
+      if (!ctrl) return;
+
+      if (e.key.toLowerCase() === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        handleUndo();
+      } else if (
+        (e.key.toLowerCase() === 'z' && e.shiftKey) ||
+        e.key.toLowerCase() === 'y'
+      ) {
+        e.preventDefault();
+        handleRedo();
+      }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [applyPick]);
+  }, [applyPick, handleUndo, handleRedo]);
 
   return (
     <header id="header" className="toolbar-wrap">
@@ -113,13 +135,15 @@ function ToolBar() {
             className="tool-btn"
             onClick={handleUndo}
             title="되돌리기 (Ctrl+Z)"
+            disabled={!canUndo}
           >
             ↶
           </button>
           <button
             className="tool-btn"
             onClick={handleRedo}
-            title="다시하기 (Ctrl+Y)"
+            title="다시하기 (Ctrl+Y / Ctrl+Shift+Z)"
+            disabled={!canRedo}
           >
             ↷
           </button>

@@ -9,7 +9,7 @@ import { deepFreeze } from '../util/deep-freeze';
 
 const pct = (n) => `${Math.round(n * 100)}%`;
 const clamp = (n, min, max) => Math.min(Math.max(n, min), max);
-const mod = (n, m) => ((n % m) + m) % m; // 음수 안전 나머지
+const mod = (n, m) => ((n % m) + m) % m;
 const nearest = (n, candidates) =>
   candidates.reduce((best, cur) =>
     Math.abs(cur - n) < Math.abs(best - n) ? cur : best

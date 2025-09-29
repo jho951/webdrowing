@@ -1,49 +1,40 @@
-/**
- * @file VectorCanvas.jsx
- * @author YJH
- */
 import { useLayoutEffect, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { setupCanvas } from '../../util/setup-canvas';
 
-/**
- * @description 벡터 캔버스
- * @returns
- */
-function Vector({ targetRef }) {
+export default function Vector({ canvasRef }) {
   const shapes = useSelector((s) => s.vector?.shapes ?? []);
   const ctxRef = useRef(null);
 
   useLayoutEffect(() => {
-    const canvas = targetRef?.current;
+    const canvas = canvasRef?.current;
     if (!canvas) return;
-    const ctx = setupCanvas(canvas);
-    ctxRef.current = ctx;
+    ctxRef.current = setupCanvas(canvas);
 
-    const renderAll = () => {
-      if (!ctxRef.current || !targetRef?.current) return;
-      const c = targetRef.current;
-      const cx = ctxRef.current;
+    const paint = () => {
+      const c = canvasRef?.current,
+        cx = ctxRef.current;
+      if (!c || !cx) return;
       cx.clearRect(0, 0, c.width, c.height);
       for (const s of shapes) drawShape(cx, s);
     };
 
-    const ro = new ResizeObserver(renderAll);
+    const ro = new ResizeObserver(paint);
     ro.observe(canvas);
-    window.addEventListener('resize', renderAll);
+    window.addEventListener('resize', paint);
     return () => {
       ro.disconnect();
-      window.removeEventListener('resize', renderAll);
+      window.removeEventListener('resize', paint);
     };
-  }, [targetRef]);
+  }, [canvasRef, shapes]);
 
   useEffect(() => {
-    const canvas = targetRef?.current;
-    const ctx = ctxRef.current;
-    if (!canvas || !ctx) return;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (const s of shapes) drawShape(ctx, s);
-  }, [shapes, targetRef]);
+    const c = canvasRef?.current,
+      cx = ctxRef.current;
+    if (!c || !cx) return;
+    cx.clearRect(0, 0, c.width, c.height);
+    for (const s of shapes) drawShape(cx, s);
+  }, [shapes, canvasRef]);
 
   return null;
 }
@@ -79,4 +70,3 @@ function drawShape(ctx, shape) {
   }
   ctx.restore();
 }
-export default Vector;

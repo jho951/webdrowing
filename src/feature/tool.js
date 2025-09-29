@@ -7,7 +7,7 @@
  * @description 붓
  */
 const BrushTool = {
-  begin(ctx, p, width, color) {
+  begin(ctx, p, { width, color }) {
     ctx.save();
     ctx.strokeStyle = color;
     ctx.lineWidth = width;
@@ -30,7 +30,7 @@ const BrushTool = {
  * @description 지우개
  */
 const EraserTool = {
-  begin(ctx, p, width) {
+  begin(ctx, p, { width }) {
     ctx.save();
     ctx.globalCompositeOperation = 'destination-out';
     ctx.lineWidth = width;

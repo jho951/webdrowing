@@ -35,10 +35,6 @@ const INITIAL_TOOL = Object.freeze({
 /** 도구 + 도형을 하나의 메뉴로 노출(그림판 UX) */
 const ALLOWED_TOOL = deepFreeze([...TOOL_ITEMS, ...SHAPE_ITEMS]);
 
-/* ────────────────────────────────────────────────────────── *
- * 빠른 조회용 인덱스
- * ────────────────────────────────────────────────────────── */
-
 const MAP_BY_VALUE = Object.freeze(
   ALLOWED_TOOL.reduce((acc, o) => {
     acc[o.value] = o;
@@ -52,10 +48,6 @@ const MAP_BY_LABEL = Object.freeze(
     return acc;
   }, {})
 );
-
-/* ────────────────────────────────────────────────────────── *
- * 타입가드 / 판별
- * ────────────────────────────────────────────────────────── */
 
 const isToolOption = (o) => !!o && o.kind === 'tool';
 const isShapeOption = (o) => !!o && o.kind === 'shape';
@@ -76,10 +68,6 @@ const isShapeValue = (v) => {
 // 비트맵 도구(브러시/지우개) 공통 정의
 const BITMAP_TOOLS = deepFreeze(['brush', 'eraser']);
 const isBitmapTool = (v) => BITMAP_TOOLS.includes(String(v));
-
-/* ────────────────────────────────────────────────────────── *
- * 조회/해결 유틸
- * ────────────────────────────────────────────────────────── */
 
 const getOptionByValue = (value) => MAP_BY_VALUE[String(value)];
 const getOptionByLabel = (label) => MAP_BY_LABEL[String(label)];
@@ -112,7 +100,6 @@ const resolveOption = (input) => {
 /* ────────────────────────────────────────────────────────── *
  * 메뉴(툴바) 데이터
  * ────────────────────────────────────────────────────────── */
-
 const MENU = deepFreeze({
   // 그림판처럼 “도구 + 도형”을 한 바에서 선택하게 할 때
   TOOLBAR: ALLOWED_TOOL,
@@ -124,12 +111,8 @@ const MENU = deepFreeze({
   ],
 });
 
-/* ────────────────────────────────────────────────────────── *
- * 선택 정책(도구/도형 상호 초기화) 헬퍼
- *  - “도형을 누르면 도구 초기값, 도구를 누르면 도형 초기값” 같은 UX를 지원
- * ────────────────────────────────────────────────────────── */
-
 /**
+ * @description 초기화
  * @param {DrawOption} next 선택될 옵션
  * @param {{tool?:DrawOption, shape?:DrawOption}} current 현재 선택 상태
  * @returns {{tool:DrawOption, shape:DrawOption}}
@@ -139,20 +122,18 @@ const reduceSelection = (next, current = {}) => {
   const shape = current.shape ?? SHAPE_ITEMS[0];
 
   if (isToolOption(next)) {
-    // 도구 선택 → 도형은 초기화(첫 도형으로)
     return { tool: next, shape: SHAPE_ITEMS[0] };
   }
   if (isShapeOption(next)) {
-    // 도형 선택 → 도구는 초기값(브러시)로
     return { tool: INITIAL_TOOL, shape: next };
   }
-  // 방어적
   return { tool, shape };
 };
 
-/* ────────────────────────────────────────────────────────── *
- * (선택) 단축키 매핑 – 필요 시 UI에서 사용
- * ────────────────────────────────────────────────────────── */
+const TOOL = deepFreeze({
+  INITIAL_TOOL,
+  ALLOWED_TOOL,
+});
 
 const HOTKEYS = deepFreeze({
   b: 'brush',
@@ -169,15 +150,9 @@ const resolveHotkey = (key) => {
   return v ? getOptionByValue(v) : null;
 };
 
-const TOOL = deepFreeze({
-  INITIAL_TOOL,
-  ALLOWED_TOOL,
-});
-
 export const DRAW = {
   TOOL,
   MENU,
-  HOTKEYS,
   isToolOption,
   isShapeOption,
   isAllowedValue,
@@ -185,9 +160,13 @@ export const DRAW = {
   getOptionByValue,
   getOptionByLabel,
   resolveOption,
+  resolveHotkey,
   reduceSelection,
   isToolValue,
   isBitmapTool,
   isShapeValue,
-  resolveHotkey,
 };
+
+/* ────────────────────────────────────────────────────────── *
+ * (선택) 단축키 매핑 – 필요 시 UI에서 사용
+ * ────────────────────────────────────────────────────────── */

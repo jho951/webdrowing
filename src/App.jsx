@@ -1,6 +1,5 @@
-import DashBoard from './component/dashBoard/DashBoard';
-import ToolBar from './component/toolBar/ToolBar';
-import './app.css';
+import ToolBar from './component/toolbar/ToolBar';
+import DashBoard from './component/dashboard/DashBoard';
 
 function App() {
   return (

@@ -1,5 +1,5 @@
 /**
- * @file depp-freeze.js
+ * @file deep-freeze.js
  * @author YJH
  * @param {} obj // 불변시킬 객체 | 배열
  * @returns
