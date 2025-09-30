@@ -1,139 +1,100 @@
 /**
- * @file ToolBar.js
- * @author YJH
+ * @file Toolbar.jsx
+ * @description  툴바
  */
-import { useCallback, useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { enterShapeOneShot, setMode } from '../../redux/slice/toolSlice';
-import {
-  undoBitmap as undo,
-  redoBitmap as redo,
-} from '../../redux/slice/historySlice';
 
-import { setSelection } from '../../redux/slice/selectSlice';
+import { TOOL } from '../../constant/tool';
+import { SHAPE } from '../../constant/shape';
+import { TEXT } from '../../constant/text';
+import { IMAGE } from '../../constant/image';
+import { SELECT } from '../../constant/select';
 
-import { DRAW } from '../../constant/draw';
-import { STYLE } from '../../constant/style';
+import { selectGlobalMode } from '../../redux/slice/modeSlice';
+import { selectActiveTool } from '../../redux/slice/toolSlice';
+import { selectActiveShape } from '../../redux/slice/shapeSlice';
 
 import './toolbar.css';
+import { dispatchFromCatalogItem, dispatchFromShortcut } from './dispatcher';
 
-function ToolBar() {
+export default function Toolbar() {
   const dispatch = useDispatch();
-  const mode = useSelector((s) => s.tool.mode);
-  const shape = useSelector((s) => s.tool.shape);
-  const color = useSelector((s) => s.selection.color);
-  const width = useSelector((s) => s.selection.width);
-  const canUndo = useSelector((s) => s.history.canUndo);
-  const canRedo = useSelector((s) => s.history.canRedo);
 
-  const TOOL_ITEMS = DRAW.MENU.TOOLBAR.filter(DRAW.isToolOption);
-  const SHAPE_ITEMS = DRAW.MENU.TOOLBAR.filter(DRAW.isShapeOption);
+  // 전역 모드 & 현재 활성 값
+  const mode = useSelector(selectGlobalMode);
+  const tool = useSelector(selectActiveTool);
+  const shape = useSelector(selectActiveShape);
 
-  const onPickTool = useCallback((v) => dispatch(setMode(v)), [dispatch]);
-  const onPickShape = useCallback(
-    (v) => dispatch(enterShapeOneShot(v)),
-    [dispatch]
-  );
-  const onPickColor = useCallback(
-    (v) => dispatch(setSelection({ color: v })),
-    [dispatch]
-  );
-  const onPickWidth = useCallback(
-    (v) => dispatch(setSelection({ width: v })),
-    [dispatch]
-  );
+  const groups = useMemo(() => {
+    const tools = TOOL.TOOLS || [];
+    const shapes = SHAPE.SHAPES || [];
+    const texts = TEXT.TEXTS || [];
+    const images = IMAGE.IMAGES || [];
+    const selects = SELECT.SELECTS || [];
 
-  const handleUndo = useCallback(() => dispatch(undo()), [dispatch]);
-  const handleRedo = useCallback(() => dispatch(redo()), [dispatch]);
+    return [
+      { key: 'tool', title: '도구', items: tools },
+      { key: 'shape', title: '도형', items: shapes },
+      { key: 'text', title: '텍스트', items: texts },
+      { key: 'image', title: '이미지', items: images },
+      { key: 'select', title: '선택', items: selects },
+    ];
+  }, []);
 
   useEffect(() => {
     const onKeyDown = (e) => {
-      const t = e.target;
       if (
-        t &&
-        (t.tagName === 'INPUT' ||
-          t.tagName === 'TEXTAREA' ||
-          t.isContentEditable)
-      )
-        return;
-
-      const opt = DRAW.resolveHotkey(e.key);
-      if (opt) {
-        e.preventDefault();
-        if (DRAW.isToolOption(opt)) onPickTool(opt.value);
-        else if (DRAW.isShapeOption(opt)) onPickShape(opt.value);
-        return;
-      }
-
-      const ctrl = e.ctrlKey || e.metaKey;
-      if (!ctrl) return;
-
-      if (e.key.toLowerCase() === 'z' && !e.shiftKey) {
-        e.preventDefault();
-        handleUndo();
-      } else if (
-        (e.key.toLowerCase() === 'z' && e.shiftKey) ||
-        e.key.toLowerCase() === 'y'
+        e.target &&
+        (e.target.tagName === 'INPUT' ||
+          e.target.tagName === 'TEXTAREA' ||
+          e.target.isContentEditable)
       ) {
-        e.preventDefault();
-        handleRedo();
+        return;
       }
+      dispatchFromShortcut(
+        dispatch,
+        e.key,
+        groups.map((g) => g.items)
+      );
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [onPickTool, onPickShape, handleUndo, handleRedo]);
+  }, [dispatch, groups]);
+
+  const isItemActive = (item) => {
+    if (item.type === TOOL.TOOL_TYPE)
+      return mode === 'tool' && tool === item.payload;
+    if (item.type === SHAPE.SHAPE_TYPE)
+      return mode === 'shape' && shape === item.payload;
+    if (item.type === TEXT.TEXT_TYPE) return mode === 'text';
+    if (item.type === IMAGE.IMAGE_TYPE) return mode === 'image';
+    if (item.type === SELECT.SELECT_TYPE) return mode === 'select';
+    return false;
+  };
 
   return (
-    <header id="header" className="toolbar-wrap">
-      <div className="toolbar-left">
-        <Section title="도구">
-          <ButtonGroup list={TOOL_ITEMS} active={mode} onClick={onPickTool} />
-        </Section>
-        <Section title="도형(원샷)">
-          <ButtonGroup
-            list={SHAPE_ITEMS}
-            active={shape}
-            onClick={onPickShape}
-          />
-        </Section>
-      </div>
-
-      <div className="toolbar-right">
-        <Section title="색">
-          <ColorGroup
-            list={STYLE.ALLOWED_COLOR}
-            active={color}
-            onClick={onPickColor}
-          />
-        </Section>
-        <Section title="선 두께">
-          <WidthGroup
-            list={STYLE.ALLOWED_WIDTH}
-            active={width}
-            onClick={onPickWidth}
-          />
-        </Section>
-
-        <div className="history-ctrl">
-          <button
-            className="tool-btn"
-            onClick={handleUndo}
-            title="되돌리기 (Ctrl+Z)"
-            disabled={!canUndo}
-          >
-            ↶
-          </button>
-          <button
-            className="tool-btn"
-            onClick={handleRedo}
-            title="다시하기 (Ctrl+Y / Ctrl+Shift+Z)"
-            disabled={!canRedo}
-          >
-            ↷
-          </button>
+    <nav className="toolbar-root">
+      {groups.map((group) => (
+        <div className="toolbar-group" key={group.key}>
+          <div className="toolbar-title">{group.title}</div>
+          <div className="toolbar-items">
+            {group.items.map((item) => (
+              <button
+                key={item.id}
+                className={`tb-btn ${isItemActive(item) ? 'active' : ''}`}
+                title={item.name + (item.shortcut ? ` (${item.shortcut})` : '')}
+                onClick={() => dispatchFromCatalogItem(dispatch, item)}
+              >
+                <span className="tb-icon">{item.icon || '•'}</span>
+                <span className="tb-label">{item.name}</span>
+                {item.shortcut && <kbd className="tb-kbd">{item.shortcut}</kbd>}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
-    </header>
+      ))}
+    </nav>
   );
 }
 
@@ -194,5 +155,3 @@ function WidthGroup({ list, active, onClick }) {
     </div>
   );
 }
-
-export default ToolBar;
