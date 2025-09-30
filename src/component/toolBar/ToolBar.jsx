@@ -1,54 +1,39 @@
+/**
+ * @file ToolBar.js
+ * @author YJH
+ */
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setTool } from '../../redux/slice/toolSlice';
-import { setShape } from '../../redux/slice/shapeSlice';
+import { enterShapeOneShot, setMode } from '../../redux/slice/toolSlice';
 import {
   undoBitmap as undo,
   redoBitmap as redo,
 } from '../../redux/slice/historySlice';
+
 import { setSelection } from '../../redux/slice/selectSlice';
 
 import { DRAW } from '../../constant/draw';
 import { STYLE } from '../../constant/style';
+
 import './toolbar.css';
 
 function ToolBar() {
   const dispatch = useDispatch();
-  const activeTool = useSelector((s) => s.tool.active);
-  const activeShape = useSelector((s) => s.shape?.active);
+  const mode = useSelector((s) => s.tool.mode);
+  const shape = useSelector((s) => s.tool.shape);
   const color = useSelector((s) => s.selection.color);
   const width = useSelector((s) => s.selection.width);
-  const canUndo = useSelector((s) => s.history?.canUndo);
-  const canRedo = useSelector((s) => s.history?.canRedo);
+  const canUndo = useSelector((s) => s.history.canUndo);
+  const canRedo = useSelector((s) => s.history.canRedo);
 
-  const ALL = DRAW.MENU.TOOLBAR ?? DRAW.MENU.TOOL;
-  const TOOL_ITEMS = ALL.filter(DRAW.isToolOption);
-  const SHAPE_ITEMS = ALL.filter(DRAW.isShapeOption);
+  const TOOL_ITEMS = DRAW.MENU.TOOLBAR.filter(DRAW.isToolOption);
+  const SHAPE_ITEMS = DRAW.MENU.TOOLBAR.filter(DRAW.isShapeOption);
 
-  const applyPick = useCallback(
-    (valueOrOption) => {
-      const value =
-        typeof valueOrOption === 'string'
-          ? valueOrOption
-          : valueOrOption?.value;
-      const target =
-        ALL.find((o) => o.value === value) ??
-        (typeof valueOrOption === 'object' ? valueOrOption : null);
-      if (!target) return;
-
-      const { tool, shape } = DRAW.reduceSelection(target, {
-        tool: { kind: 'tool', value: activeTool, label: '' },
-        shape: { kind: 'shape', value: activeShape, label: '' },
-      });
-      if (tool?.value) dispatch(setTool(tool.value));
-      if (shape?.value) dispatch(setShape(shape.value));
-    },
-    [ALL, activeTool, activeShape, dispatch]
+  const onPickTool = useCallback((v) => dispatch(setMode(v)), [dispatch]);
+  const onPickShape = useCallback(
+    (v) => dispatch(enterShapeOneShot(v)),
+    [dispatch]
   );
-
-  const handleUndo = useCallback(() => dispatch(undo()), [dispatch]);
-  const handleRedo = useCallback(() => dispatch(redo()), [dispatch]);
-
   const onPickColor = useCallback(
     (v) => dispatch(setSelection({ color: v })),
     [dispatch]
@@ -57,6 +42,9 @@ function ToolBar() {
     (v) => dispatch(setSelection({ width: v })),
     [dispatch]
   );
+
+  const handleUndo = useCallback(() => dispatch(undo()), [dispatch]);
+  const handleRedo = useCallback(() => dispatch(redo()), [dispatch]);
 
   useEffect(() => {
     const onKeyDown = (e) => {
@@ -69,15 +57,14 @@ function ToolBar() {
       )
         return;
 
-      // 기존: 도구 단축키
       const opt = DRAW.resolveHotkey(e.key);
       if (opt) {
         e.preventDefault();
-        applyPick(opt.value);
+        if (DRAW.isToolOption(opt)) onPickTool(opt.value);
+        else if (DRAW.isShapeOption(opt)) onPickShape(opt.value);
         return;
       }
 
-      // 추가: 히스토리 단축키
       const ctrl = e.ctrlKey || e.metaKey;
       if (!ctrl) return;
 
@@ -94,23 +81,19 @@ function ToolBar() {
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [applyPick, handleUndo, handleRedo]);
+  }, [onPickTool, onPickShape, handleUndo, handleRedo]);
 
   return (
     <header id="header" className="toolbar-wrap">
       <div className="toolbar-left">
         <Section title="도구">
-          <ButtonGroup
-            list={TOOL_ITEMS}
-            active={activeTool}
-            onClick={applyPick}
-          />
+          <ButtonGroup list={TOOL_ITEMS} active={mode} onClick={onPickTool} />
         </Section>
-        <Section title="도형">
+        <Section title="도형(원샷)">
           <ButtonGroup
             list={SHAPE_ITEMS}
-            active={activeShape}
-            onClick={applyPick}
+            active={shape}
+            onClick={onPickShape}
           />
         </Section>
       </div>

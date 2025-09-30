@@ -1,3 +1,7 @@
+/**
+ * @file useBitmap.js
+ * @author YJH
+ */
 import { useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { pushBitmapSnapshot } from '../redux/slice/historySlice';
@@ -6,13 +10,16 @@ import { ToolMap } from '../feature';
 import { DRAW } from '../constant/draw';
 import { getCanvasPos } from '../util/get-canvas-pos';
 
+/**
+ * @description 비트맵 캔버스 내 그리기 훅
+ * @param {*} canvasRef
+ * @param {*} ctxRef
+ * @param {*} param2
+ * @returns
+ */
 function useBitmap(canvasRef, ctxRef, { tool, color, width }) {
   const dispatch = useDispatch();
   const [isDrawing, setIsDrawing] = useState(false);
-
-  const colorHex =
-    typeof color === 'object' ? color?.value || '#000000' : color || '#000000';
-  const widthPx = Number(width ?? 3);
 
   const onPointerDown = useCallback(
     (e) => {
@@ -29,13 +36,13 @@ function useBitmap(canvasRef, ctxRef, { tool, color, width }) {
       const impl = ToolMap[tool];
       if (!impl) return;
 
-      if (tool === 'brush') impl.begin(ctx, p, widthPx, colorHex);
-      else impl.begin(ctx, p, widthPx);
+      if (tool === 'brush') impl.begin(ctx, p, width, color);
+      else impl.begin(ctx, p, width);
 
       setIsDrawing(true);
       canvas.setPointerCapture?.(e.pointerId);
     },
-    [tool, canvasRef, ctxRef, colorHex, widthPx]
+    [tool, canvasRef, ctxRef, color, width]
   );
 
   const onPointerMove = useCallback(

@@ -1,10 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { bitmapHistory } from '../../util/bitmap-history';
+import { bitmapHistory } from '../../util/get-bitmap-history';
+import { markBitmap } from './hubSlice';
 
-const initialState = {
-  canUndo: false,
-  canRedo: false,
-};
+const initialState = { canUndo: false, canRedo: false };
 
 const historySlice = createSlice({
   name: 'history',
@@ -21,27 +19,24 @@ const historySlice = createSlice({
   },
 });
 
+const pushBitmapSnapshot = () => async (dispatch) => {
+  await bitmapHistory().snapshot();
+  dispatch(historySlice.actions.updateHistoryState());
+  dispatch(markBitmap());
+};
+
+const undoBitmap = () => (dispatch) => {
+  bitmapHistory().undo();
+  dispatch(historySlice.actions.updateHistoryState());
+  dispatch(markBitmap());
+};
+
+const redoBitmap = () => (dispatch) => {
+  bitmapHistory().redo();
+  dispatch(historySlice.actions.updateHistoryState());
+  dispatch(markBitmap());
+};
+
+export { pushBitmapSnapshot, undoBitmap, redoBitmap };
 export const { updateHistoryState, resetHistory } = historySlice.actions;
 export default historySlice.reducer;
-
-/* ────────────────
- * Thunks
- * ──────────────── */
-
-// ✅ 비트맵 현재 상태를 스냅샷으로 저장
-export const pushBitmapSnapshot = () => async (dispatch) => {
-  await bitmapHistory().snapshot();
-  dispatch(updateHistoryState());
-};
-
-// ✅ Undo
-export const undoBitmap = () => (dispatch) => {
-  bitmapHistory().undo();
-  dispatch(updateHistoryState());
-};
-
-// ✅ Redo
-export const redoBitmap = () => (dispatch) => {
-  bitmapHistory().redo();
-  dispatch(updateHistoryState());
-};

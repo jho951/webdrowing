@@ -1,36 +1,57 @@
+/**
+ * @file selectSlice.js
+ * @description 선택/영역(마키) 및 트랜스폼 상태
+ */
 import { createSlice } from '@reduxjs/toolkit';
-import { STYLE } from '../../constant/style';
+import { setMode } from './modeSlice';
+import { MODE } from '../../constant/mode';
+import { SELECT } from '../../constant/select';
 
 const initialState = {
-  color: STYLE.INITIAL_COLOR.value,
-  width: STYLE.INITIAL_WIDTH.value,
+  mode: MODE.GLOBAL_NULL,
+  marquee: null,
+  selectedIds: [],
+  options: {
+    dashed: true,
+    handleSize: 8,
+    showBounds: true,
+  },
 };
 
 const selectSlice = createSlice({
-  name: 'selection',
+  name: SELECT.SELECT_TYPE,
   initialState,
   reducers: {
-    setSelection(state, action) {
-      const p = action.payload || {};
-      if (p.color != null) {
-        state.color = STYLE.isAllowedColor(p.color)
-          ? STYLE.resolveColor(p.color).value
-          : state.color;
-      }
-      if (p.width != null) {
-        state.width = STYLE.resolveWidth(p.width);
-      }
+    setMarquee(state, action) {
+      state.marquee = action.payload;
     },
-    resetSelection() {
-      return { ...initialState };
+    setSelectedIds(state, action) {
+      state.selectedIds = action.payload;
     },
-    replace(state, action) {
-      return action.payload && typeof action.payload === 'object'
-        ? { ...state, ...action.payload }
-        : state;
+    clearSelection(state) {
+      state.marquee = null;
+      state.selectedIds = [];
     },
+    setSelectOptions(state, action) {
+      state.options = { ...state.options, ...action.payload };
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(setMode, (state, { payload }) => {
+      state.mode =
+        payload === SELECT.SELECT_TYPE ? SELECT.SELECT_TYPE : MODE.GLOBAL_NULL;
+      if (state.mode === SELECT.SELECT_TYPE) state.marquee = null;
+    });
   },
 });
 
-export const { setSelection, resetSelection, replace } = selectSlice.actions;
+export const { setMarquee, setSelectedIds, clearSelection, setSelectOptions } =
+  selectSlice.actions;
+
 export default selectSlice.reducer;
+
+export const selectSelectState = (s) => s.select;
+export const selectSelectMode = (s) => s.select.mode;
+export const selectMarquee = (s) => s.select.marquee;
+export const selectSelectedIds = (s) => s.select.selectedIds;
+export const selectSelectOptions = (s) => s.select.options;

@@ -1,37 +1,52 @@
 /**
  * @file textSlice.js
- * @author YJH
+ * @description 텍스트 상자 상태
  */
 import { createSlice } from '@reduxjs/toolkit';
+import { setMode } from './modeSlice';
+import { MODE } from '../../constant/mode';
+import { TEXT } from '../../constant/text';
 
-const initialState = { texts: [] };
+const initialState = {
+  mode: MODE.GLOBAL_NULL,
+  boxes: [],
+  activeId: null,
+};
 
 const textSlice = createSlice({
-  name: 'text',
+  name: TEXT.TEXT_TYPE,
   initialState,
   reducers: {
-    addText(state, action) {
-      state.texts.push(action.payload);
+    addTextBox(state, action) {
+      state.boxes.push(action.payload);
+      state.activeId = action.payload.id;
     },
-    updateText(state, action) {
-      const idx = state.texts.findIndex((t) => t.id === action.payload.id);
-      if (idx >= 0) state.texts[idx] = action.payload;
+    updateTextBox(state, action) {
+      const idx = state.boxes.findIndex((b) => b.id === action.payload.id);
+      if (idx >= 0) state.boxes[idx] = action.payload;
     },
-    removeText(state, action) {
-      const id = action.payload;
-      state.texts = state.texts.filter((t) => t.id !== id);
+    removeTextBox(state, action) {
+      state.boxes = state.boxes.filter((b) => b.id !== action.payload);
+      if (state.activeId === action.payload) state.activeId = null;
     },
-    replaceAll(state, action) {
-      return action.payload && typeof action.payload === 'object'
-        ? { ...action.payload }
-        : state;
+    setActiveTextBox(state, action) {
+      state.activeId = action.payload;
     },
-    clear(state) {
-      state.texts = [];
-    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(setMode, (state, { payload }) => {
+      state.mode =
+        payload === TEXT.TEXT_TYPE ? TEXT.TEXT_TYPE : MODE.GLOBAL_NULL;
+    });
   },
 });
 
-export const { addText, updateText, removeText, replaceAll, clear } =
+export const { addTextBox, updateTextBox, removeTextBox, setActiveTextBox } =
   textSlice.actions;
+
 export default textSlice.reducer;
+
+export const selectTextState = (s) => s.text;
+export const selectTextMode = (s) => s.text.mode;
+export const selectTextBoxes = (s) => s.text.boxes;
+export const selectActiveTextId = (s) => s.text.activeId;

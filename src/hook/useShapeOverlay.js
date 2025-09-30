@@ -1,6 +1,7 @@
 import { useRef, useState, useMemo, useCallback } from 'react';
 import { ShapeMap } from '../feature';
 import { getCanvasPos } from '../util/get-canvas-pos';
+import { getOverlayDesign } from '../util/get-overlay-design';
 
 const SHAPE_TOOLS = ['circle', 'rect', 'line', 'curve'];
 
@@ -53,15 +54,18 @@ function useShapeOverlay(canvasRef, ctxRef, { tool, color, width, onCommit }) {
       setIsPreview(true);
 
       clearOverlay();
-      callShapeMethod(
-        shapeKey,
-        'draw',
-        ctx,
-        p,
-        width,
-        color,
-        toolStateRef.current
-      );
+      getOverlayDesign(ctxRef, () => {
+        callShapeMethod(
+          shapeKey,
+          'draw',
+          ctx,
+          p,
+          width,
+          color,
+          toolStateRef.current
+        );
+      });
+
       canvas.setPointerCapture?.(e.pointerId);
     },
     [isShapeMode, shapeKey, canvasRef, ctxRef, width, color, clearOverlay]
@@ -80,15 +84,17 @@ function useShapeOverlay(canvasRef, ctxRef, { tool, color, width, onCommit }) {
       lastPointRef.current = p;
 
       clearOverlay();
-      callShapeMethod(
-        shapeKey,
-        'draw',
-        ctx,
-        p,
-        width,
-        color,
-        toolStateRef.current
-      );
+      getOverlayDesign(ctxRef, () => {
+        callShapeMethod(
+          shapeKey,
+          'draw',
+          ctx,
+          p,
+          width,
+          color,
+          toolStateRef.current
+        );
+      });
     },
     [
       isPreview,

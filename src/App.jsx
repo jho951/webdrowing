@@ -1,11 +1,8 @@
-import ToolBar from './component/toolbar/ToolBar';
-import DashBoard from './component/dashboard/DashBoard';
-
 function App() {
   return (
     <main id="main">
-      <ToolBar />
-      <DashBoard />
+      {/* <ToolBar />
+      <DashBoard /> */}
     </main>
   );
 }
