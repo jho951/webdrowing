@@ -8,41 +8,43 @@ import { MODE } from '../../constant/mode';
 import { TEXT } from '../../constant/text';
 
 const initialState = {
-  mode: MODE.GLOBAL_NULL,
-  boxes: [],
-  activeId: null,
+    mode: MODE.GLOBAL_NULL,
+    boxes: [],
+    activeId: null,
 };
 
 const textSlice = createSlice({
-  name: TEXT.TEXT_TYPE,
-  initialState,
-  reducers: {
-    addTextBox(state, action) {
-      state.boxes.push(action.payload);
-      state.activeId = action.payload.id;
+    name: TEXT.TEXT_TYPE,
+    initialState,
+    reducers: {
+        addTextBox(state, action) {
+            state.boxes.push(action.payload);
+            state.activeId = action.payload.id;
+        },
+        updateTextBox(state, action) {
+            const idx = state.boxes.findIndex(
+                (b) => b.id === action.payload.id
+            );
+            if (idx >= 0) state.boxes[idx] = action.payload;
+        },
+        removeTextBox(state, action) {
+            state.boxes = state.boxes.filter((b) => b.id !== action.payload);
+            if (state.activeId === action.payload) state.activeId = null;
+        },
+        setActiveTextBox(state, action) {
+            state.activeId = action.payload;
+        },
     },
-    updateTextBox(state, action) {
-      const idx = state.boxes.findIndex((b) => b.id === action.payload.id);
-      if (idx >= 0) state.boxes[idx] = action.payload;
+    extraReducers: (builder) => {
+        builder.addCase(setMode, (state, { payload }) => {
+            state.mode =
+                payload === TEXT.TEXT_TYPE ? TEXT.TEXT_TYPE : MODE.GLOBAL_NULL;
+        });
     },
-    removeTextBox(state, action) {
-      state.boxes = state.boxes.filter((b) => b.id !== action.payload);
-      if (state.activeId === action.payload) state.activeId = null;
-    },
-    setActiveTextBox(state, action) {
-      state.activeId = action.payload;
-    },
-  },
-  extraReducers: (builder) => {
-    builder.addCase(setMode, (state, { payload }) => {
-      state.mode =
-        payload === TEXT.TEXT_TYPE ? TEXT.TEXT_TYPE : MODE.GLOBAL_NULL;
-    });
-  },
 });
 
 export const { addTextBox, updateTextBox, removeTextBox, setActiveTextBox } =
-  textSlice.actions;
+    textSlice.actions;
 
 export default textSlice.reducer;
 

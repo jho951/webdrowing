@@ -14,14 +14,14 @@ const DASH_WIDTH = 2;
  * @returns
  */
 function getOverlayDesign(ctxRef, fn) {
-  const ctx = ctxRef?.current;
-  if (!ctx || typeof fn !== 'function') return;
-  ctx.save();
-  ctx.setLineDash(DASH);
-  ctx.lineWidth = DASH_WIDTH;
-  ctx.strokeStyle = DASH_COLOR;
-  fn();
-  ctx.restore();
+    const ctx = ctxRef?.current;
+    if (!ctx || typeof fn !== 'function') return;
+    ctx.save();
+    ctx.setLineDash(DASH);
+    ctx.lineWidth = DASH_WIDTH;
+    ctx.strokeStyle = DASH_COLOR;
+    fn();
+    ctx.restore();
 }
 
 export { getOverlayDesign };

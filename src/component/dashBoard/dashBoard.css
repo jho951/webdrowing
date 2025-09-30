@@ -1,38 +1,47 @@
 .dashboard {
-  position: relative;
-  width: 800px;
-  height: 600px;
-  overflow: hidden;
-  background-color: var(--background-color);
-  border-radius: var(--default-figure);
-  box-shadow: var(--box-shadow);
-  margin: var(--default-figure);
+    position: relative;
+    width: 800px;
+    height: 600px;
+    overflow: hidden;
+    resize: both;
+    min-width: 320px;
+    min-height: 240px;
+    max-width: 2000px;
+    max-height: 1400px;
+
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    margin: 12px;
 }
 
 .dashboard canvas.bitmap,
 .dashboard canvas.vector,
 .dashboard canvas.overlay {
-  width: 100%;
-  height: 100%;
-  display: block;
-  position: absolute;
-  inset: 0;
-  border: 0;
-  padding: 0;
+    box-sizing: border-box;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    border: 0;
+    padding: 0;
 }
 
 .dashboard canvas.bitmap {
-  z-index: calc(var(--z-index) + 1);
-  pointer-events: none;
+    z-index: 1;
+    pointer-events: none;
 }
-
 .dashboard canvas.vector {
-  z-index: calc(var(--z-index) + 2);
-  pointer-events: none;
+    z-index: 2;
+    pointer-events: none;
+}
+.dashboard canvas.overlay {
+    z-index: 3;
+    pointer-events: auto;
+    cursor: crosshair;
+    touch-action: none;
 }
 
-.dashboard canvas.overlay {
-  z-index: calc(var(--z-index) + 3);
-  pointer-events: auto;
-  cursor: crosshair;
+.overlay-textarea::placeholder {
+    color: rgba(0, 0, 0, 0.35);
 }

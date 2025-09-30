@@ -1,155 +1,190 @@
 /**
  * @file Toolbar.jsx
- * @description  툴바
+ * @description 툴바 컨테이너: 카탈로그 그룹 + 스타일 패널 + 전역 단축키
  */
 import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { selectGlobalMode } from '../../redux/slice/modeSlice';
+import { selectActiveTool } from '../../redux/slice/toolSlice';
+import { selectActiveShape } from '../../redux/slice/shapeSlice';
+import { selectEffectiveStyle } from '../../redux/slice/styleSlice';
+
+import {
+    selectZoom,
+    selectRotation,
+    setZoom,
+    setRotation,
+} from '../../redux/slice/sizeSlice';
 
 import { TOOL } from '../../constant/tool';
 import { SHAPE } from '../../constant/shape';
 import { TEXT } from '../../constant/text';
 import { IMAGE } from '../../constant/image';
 import { SELECT } from '../../constant/select';
+import { STYLE } from '../../constant/style';
 
-import { selectGlobalMode } from '../../redux/slice/modeSlice';
-import { selectActiveTool } from '../../redux/slice/toolSlice';
-import { selectActiveShape } from '../../redux/slice/shapeSlice';
+import {
+    dispatchFromCatalogItem,
+    dispatchFromShortcut,
+} from '../../util/dispatcher';
+
+import ToolbarGroup from './ToolbarGroup';
+import ColorControl from './ColorControl';
+import WidthControl from './WidthControl';
+import ZoomControl from './ZoomControl';
+import RotationControl from './RotationControl';
 
 import './toolbar.css';
-import { dispatchFromCatalogItem, dispatchFromShortcut } from './dispatcher';
+import HistoryButtons from '../historybtn/HistoryBtn';
 
 export default function Toolbar() {
-  const dispatch = useDispatch();
-  const mode = useSelector(selectGlobalMode);
-  const tool = useSelector(selectActiveTool);
-  const shape = useSelector(selectActiveShape);
+    const dispatch = useDispatch();
 
-  const groups = useMemo(() => {
-    const tools = TOOL.TOOLS || [];
-    const shapes = SHAPE.SHAPES || [];
-    const texts = TEXT.TEXTS || [];
-    const images = IMAGE.IMAGES || [];
-    const selects = SELECT.SELECTS || [];
+    // 현재 모드/툴/도형
+    const mode = useSelector(selectGlobalMode);
+    const tool = useSelector(selectActiveTool);
+    const shape = useSelector(selectActiveShape);
+    const color = useSelector(selectEffectiveStyle);
 
-    return [
-      { key: 'tool', title: '도구', items: tools },
-      { key: 'shape', title: '도형', items: shapes },
-      { key: 'text', title: '텍스트', items: texts },
-      { key: 'image', title: '이미지', items: images },
-      { key: 'select', title: '선택', items: selects },
-    ];
-  }, []);
+    // 스타일(모드에 따라 안전 접근)
+    const eff = useSelector(selectEffectiveStyle) || {};
+    const currentStroke = eff?.stroke || eff?.tool?.stroke || {};
+    const currentColor = currentStroke.color ?? STYLE.INITIAL_COLOR.value;
+    const currentWidth = currentStroke.width ?? STYLE.INITIAL_WIDTH.value;
 
-  useEffect(() => {
-    const onKeyDown = (e) => {
-      if (
-        e.target &&
-        (e.target.tagName === 'INPUT' ||
-          e.target.tagName === 'TEXTAREA' ||
-          e.target.isContentEditable)
-      ) {
-        return;
-      }
-      dispatchFromShortcut(
-        dispatch,
-        e.key,
-        groups.map((g) => g.items)
-      );
+    // 확대/회전
+    const zoom = useSelector(selectZoom) ?? 1;
+    const rotation = useSelector(selectRotation) ?? 0;
+
+    // 카탈로그 그룹
+    const groups = useMemo(
+        () => [
+            {
+                key: 'tool',
+                title: '도구',
+                items: Array.isArray(TOOL.TOOLS) ? TOOL.TOOLS : [],
+            },
+            {
+                key: 'shape',
+                title: '도형',
+                items: Array.isArray(SHAPE.SHAPES) ? SHAPE.SHAPES : [],
+            },
+            {
+                key: 'text',
+                title: '텍스트',
+                items: Array.isArray(TEXT.TEXTS) ? TEXT.TEXTS : [],
+            },
+            {
+                key: 'image',
+                title: '이미지',
+                items: Array.isArray(IMAGE.IMAGES) ? IMAGE.IMAGES : [],
+            },
+            {
+                key: 'select',
+                title: '선택',
+                items: Array.isArray(SELECT.SELECTS) ? SELECT.SELECTS : [],
+            },
+        ],
+        []
+    );
+
+    // 버튼 active 판정
+    const isItemActive = (item) => {
+        if (item.type === TOOL.TOOL_TYPE)
+            return mode === 'tool' && tool === item.payload;
+        if (item.type === SHAPE.SHAPE_TYPE)
+            return mode === 'shape' && shape === item.payload;
+        if (item.type === TEXT.TEXT_TYPE) return mode === 'text';
+        if (item.type === IMAGE.IMAGE_TYPE) return mode === 'image';
+        if (item.type === SELECT.SELECT_TYPE) return mode === 'select';
+        return false;
     };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [dispatch, groups]);
 
-  const isItemActive = (item) => {
-    if (item.type === TOOL.TOOL_TYPE)
-      return mode === 'tool' && tool === item.payload;
-    if (item.type === SHAPE.SHAPE_TYPE)
-      return mode === 'shape' && shape === item.payload;
-    if (item.type === TEXT.TEXT_TYPE) return mode === 'text';
-    if (item.type === IMAGE.IMAGE_TYPE) return mode === 'image';
-    if (item.type === SELECT.SELECT_TYPE) return mode === 'select';
-    return false;
-  };
+    useEffect(() => {
+        const onKeyDown = (e) => {
+            const t = e.target;
+            if (
+                t &&
+                (t.tagName === 'INPUT' ||
+                    t.tagName === 'TEXTAREA' ||
+                    t.isContentEditable)
+            )
+                return;
+            dispatchFromShortcut(
+                dispatch,
+                e.key,
+                groups.map((g) => g.items)
+            );
+        };
+        window.addEventListener('keydown', onKeyDown);
+        return () => window.removeEventListener('keydown', onKeyDown);
+    }, [dispatch, groups]);
 
-  return (
-    <nav className="toolbar-root">
-      {groups.map((group) => (
-        <div className="toolbar-group" key={group.key}>
-          <div className="toolbar-title">{group.title}</div>
-          <div className="toolbar-items">
-            {group.items.map((item) => (
-              <button
-                key={item.id}
-                className={`tb-btn ${isItemActive(item) ? 'active' : ''}`}
-                title={item.name + (item.shortcut ? ` (${item.shortcut})` : '')}
-                onClick={() => dispatchFromCatalogItem(dispatch, item)}
-              >
-                <span className="tb-icon">{item.icon || '•'}</span>
-                <span className="tb-label">{item.name}</span>
-                {item.shortcut && <kbd className="tb-kbd">{item.shortcut}</kbd>}
-              </button>
+    const stepZoom = (delta) => {
+        const next = Math.max(0.1, Math.min(8, (zoom ?? 1) + delta));
+        dispatch(setZoom(next));
+    };
+    const setZoomExact = (v) => {
+        const n = Number(v);
+        if (Number.isFinite(n)) {
+            const next = Math.max(0.1, Math.min(8, n));
+            dispatch(setZoom(next));
+        }
+    };
+    const stepRotation = (delta) => {
+        let next = (rotation + delta) % 360;
+        if (next < 0) next += 360;
+        dispatch(setRotation(next));
+    };
+    const setRotationExact = (v) => {
+        const n = Number(v);
+        if (Number.isFinite(n)) {
+            let next = n % 360;
+            if (next < 0) next += 360;
+            dispatch(setRotation(next));
+        }
+    };
+
+    const COLOR_LIST = STYLE.ALLOWED_COLOR.map((c) => c.value);
+    const WIDTH_LIST = STYLE.ALLOWED_WIDTH.map((w) => w.value);
+
+    return (
+        <nav className="toolbar-wrap">
+            {groups.map((group) => (
+                <ToolbarGroup
+                    key={group.key}
+                    title={group.title}
+                    items={group.items}
+                    isItemActive={isItemActive}
+                    onItemClick={(item) =>
+                        dispatchFromCatalogItem(dispatch, item)
+                    }
+                />
             ))}
-          </div>
-        </div>
-      ))}
-    </nav>
-  );
-}
 
-function Section({ title, children }) {
-  return (
-    <section className="section">
-      <div className="section-title">{title}</div>
-      <div className="section-body">{children}</div>
-    </section>
-  );
-}
+            <div className="toolbar-group">
+                <div className="toolbar-title">스타일</div>
 
-function ButtonGroup({ list, active, onClick }) {
-  return (
-    <div className="btn-group">
-      {list.map((o) => (
-        <button
-          key={o.value}
-          className={`tool-btn ${active === o.value ? 'active' : ''}`}
-          onClick={() => onClick(o.value)}
-          title={o.label}
-        >
-          {o.label}
-        </button>
-      ))}
-    </div>
-  );
-}
+                <ColorControl colors={COLOR_LIST} value={currentColor} />
 
-function ColorGroup({ list, active, onClick }) {
-  return (
-    <div className="btn-group">
-      {list.map((o) => (
-        <button
-          key={o.value}
-          className={`tool-btn ${active === (o.value || o) ? 'active' : ''}`}
-          onClick={() => onClick(o.value || o)}
-          title={o.label || o.value}
-          style={{ color: o.value || o }}
-        />
-      ))}
-    </div>
-  );
-}
+                <WidthControl
+                    widths={WIDTH_LIST}
+                    value={Number(currentWidth)}
+                />
 
-function WidthGroup({ list, active, onClick }) {
-  return (
-    <div className="btn-group">
-      {list.map((o) => (
-        <button
-          key={o.value}
-          className={`tool-btn thickness ${active === o.value ? 'active' : ''}`}
-          onClick={() => onClick(o.value)}
-          title={o.label}
-          data-width={o.value}
-        />
-      ))}
-    </div>
-  );
+                <ZoomControl
+                    value={Number(zoom)}
+                    onStep={stepZoom}
+                    onSet={setZoomExact}
+                />
+
+                <RotationControl
+                    value={Number(rotation)}
+                    onStep={stepRotation}
+                    onSet={setRotationExact}
+                />
+            </div>
+        </nav>
+    );
 }

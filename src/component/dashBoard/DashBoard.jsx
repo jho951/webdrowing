@@ -1,35 +1,41 @@
-/**
- * @file DashBoard.tsx
- * @author YJH
- */
 import { useRef } from 'react';
-import Bitmap from '../bitmap/Bitmap';
-import Vector from '../vector/Vector';
-import Overlay from '../overlay/Overlay';
-
+import Bitmap from './bitmap/Bitmap';
+import Vector from './vector/Vector';
+import Overlay from './overlay/Overlay';
 import './dashboard.css';
-import { useSelector } from 'react-redux';
-import { selectGlobalMode } from '../../redux/slice/modeSlice';
+import Toolbar from '../toolbar/ToolBar';
 
-/**
- * @description 비트맵, 벡터, 오버레이 3겹의 캔버스
- * @returns dashboard
- */
 function DashBoard() {
-  const bitmapRef = useRef(null);
-  const vectorRef = useRef(null);
-  const overlayRef = useRef(null);
-  const mode = useSelector(selectGlobalMode);
+    const bitmapRef = useRef(null);
+    const bitmapCtxRef = useRef(null);
+    const vectorRef = useRef(null);
+    const vectorCtxRef = useRef(null);
+    const overlayRef = useRef(null);
 
-  return (
-    <section className="dashboard">
-      <canvas className="bitmap" ref={bitmapRef} />
-      <canvas className="vector" ref={vectorRef} />
-      <canvas className="overlay" ref={overlayRef} />
-      <Bitmap canvasRef={bitmapRef} />
-      <Vector canvasRef={vectorRef} />
-      <Overlay canvasRef={overlayRef} bitmapRef={bitmapRef} />
-    </section>
-  );
+    return (
+        <>
+            <section className="dashboard">
+                <Bitmap
+                    canvasRef={bitmapRef}
+                    onReady={(ctx) => {
+                        bitmapCtxRef.current = ctx;
+                    }}
+                />
+
+                <Vector
+                    canvasRef={vectorRef}
+                    onReady={(ctx) => {
+                        vectorCtxRef.current = ctx;
+                    }}
+                />
+                <Overlay
+                    canvasRef={overlayRef}
+                    bitmapCanvasRef={bitmapRef}
+                    bitmapCtxRef={bitmapCtxRef}
+                    vectorCtxRef={vectorCtxRef}
+                />
+            </section>
+        </>
+    );
 }
 export default DashBoard;

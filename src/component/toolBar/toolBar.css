@@ -1,108 +1,299 @@
+/* components/toolbar/toolbar.css */
+
+/* ───────────────── 기본 변수 ───────────────── */
+:root {
+    --tb-bg: #ffffff;
+    --tb-border: #e6e8eb;
+    --tb-divider: #eef0f3;
+    --tb-text: #1f2937;
+    --tb-muted: #6b7280;
+    --tb-primary: #2563eb;
+    --tb-primary-weak: rgba(37, 99, 235, 0.12);
+    --tb-hover: #f7f8fa;
+    --tb-active: #eef4ff;
+
+    --tb-radius: 10px;
+    --tb-radius-sm: 8px;
+    --tb-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+
+    --tb-gap: 10px;
+    --tb-pad: 12px;
+    --tb-item-gap: 8px;
+
+    --tb-font:
+        13px/1.4 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+        Helvetica, Arial, 'Apple SD Gothic Neo', 'Noto Sans KR',
+        'Malgun Gothic', sans-serif;
+}
+
+/* 다크 자동 대응 (원하면 제거 가능) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --tb-bg: #111418;
+        --tb-border: #242830;
+        --tb-divider: #1a1e25;
+        --tb-text: #e5e7eb;
+        --tb-muted: #9ca3af;
+        --tb-primary: #60a5fa;
+        --tb-primary-weak: rgba(96, 165, 250, 0.14);
+        --tb-hover: #151922;
+        --tb-active: #0f172a;
+        --tb-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+}
+
+/* ───────────────── 컨테이너 ───────────────── */
 .toolbar-wrap {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 6px 10px;
-  border-bottom: 1px solid var(--border-color);
-  background: var(--primary-color);
-  user-select: none;
-  font-family: sans-serif;
-}
-.toolbar-left {
-  display: flex;
-  gap: 20px;
-}
-.toolbar-right {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+    box-sizing: border-box;
+    background: var(--tb-bg);
+    color: var(--tb-text);
+    border: 1px solid var(--tb-border);
+    border-radius: var(--tb-radius);
+    box-shadow: var(--tb-shadow);
+    padding: var(--tb-pad);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
+    gap: var(--tb-gap);
 }
 
-.section {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.section-title {
-  font-size: 12px;
-  font-weight: bold;
-  color: #444;
-}
-.section-body {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
+@media (max-width: 960px) {
+    .toolbar-wrap {
+        grid-template-columns: 1fr;
+    }
 }
 
-.btn-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
+/* ───────────────── 그룹(카테고리/스타일) ───────────────── */
+.toolbar-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px solid var(--tb-border);
+    border-radius: var(--tb-radius-sm);
+    padding: 10px;
+    background: transparent;
 }
 
-.tool-btn {
-  min-width: 32px;
-  min-height: 28px;
-  padding: 4px 8px;
-  font-size: 13px;
-  border: 1px solid #ccc;
-  background: white;
-  border-radius: 4px;
-  cursor: pointer;
-  transition:
-    background 0.15s,
-    border-color 0.15s;
-}
-.tool-btn:hover {
-  background: #f0f0f0;
-}
-.tool-btn.active {
-  border-color: #0078d7;
-  background: #e6f2fb;
+.toolbar-title {
+    font: 600 12px/1 var(--tb-font);
+    letter-spacing: 0.02em;
+    color: var(--tb-muted);
+    text-transform: uppercase;
 }
 
-/* 색상 버튼 */
-.btn-group .tool-btn {
-  width: 24px;
-  height: 24px;
-  padding: 0;
-}
-.btn-group .tool-btn[style]::before {
-  content: '';
-  display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: 2px;
-  background: currentColor;
+.toolbar-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--tb-item-gap);
 }
 
-/* 두께 버튼 */
-.tool-btn.thickness {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.tool-btn.thickness::before {
-  content: '';
-  display: block;
-  width: 18px;
-  border-radius: 2px;
-  background: #333;
-}
-.tool-btn.thickness[data-width='1']::before {
-  height: 1px;
-}
-.tool-btn.thickness[data-width='3']::before {
-  height: 3px;
-}
-.tool-btn.thickness[data-width='5']::before {
-  height: 5px;
-}
-.tool-btn.thickness[data-width='7']::before {
-  height: 7px;
+.tb-empty {
+    font: 500 12px/1 var(--tb-font);
+    color: var(--tb-muted);
+    padding: 8px 10px;
+    border: 1px dashed var(--tb-border);
+    border-radius: 8px;
 }
 
-.history-ctrl {
-  display: flex;
-  gap: 6px;
+/* ───────────────── 공통 버튼 ───────────────── */
+.tb-btn {
+    -webkit-tap-highlight-color: transparent;
+    appearance: none;
+    border: 1px solid var(--tb-border);
+    background: #fff0;
+    color: var(--tb-text);
+    font: 500 13px/1 var(--tb-font);
+    border-radius: 9px;
+    padding: 8px 10px;
+    cursor: pointer;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.06s ease;
+}
+.tb-btn:hover {
+    background: var(--tb-hover);
+}
+.tb-btn:active {
+    transform: translateY(1px);
+}
+.tb-btn.active {
+    background: var(--tb-active);
+    border-color: var(--tb-primary);
+    box-shadow: inset 0 0 0 1px var(--tb-primary-weak);
+}
+.tb-label {
+    white-space: nowrap;
+}
+
+/* ───────────────── 색상 스와치 ───────────────── */
+.color-swatch-list {
+    align-items: center;
+}
+
+.tb-swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: 1px solid var(--tb-border);
+    cursor: pointer;
+    padding: 0;
+    transition:
+        transform 0.08s ease,
+        box-shadow 0.15s ease,
+        border-color 0.15s ease;
+}
+.tb-swatch:hover {
+    transform: translateY(-1px);
+}
+.tb-swatch.active {
+    box-shadow:
+        0 0 0 2px var(--tb-primary-weak),
+        inset 0 0 0 1px #fff6;
+    border-color: var(--tb-primary);
+}
+.tb-color-input {
+    width: 44px;
+    height: 28px;
+    border-radius: 8px;
+    border: 1px solid var(--tb-border);
+    background: transparent;
+    padding: 0;
+}
+
+/* ───────────────── 굵기 칩 ───────────────── */
+.width-chip-list {
+    align-items: center;
+}
+
+.tb-width {
+    --w: attr(data-width number); /* hint: 값 표시는 title로 */
+    width: 36px;
+    height: 28px;
+    border-radius: 8px;
+    border: 1px solid var(--tb-border);
+    background: linear-gradient(#0000, #0000);
+    position: relative;
+    cursor: pointer;
+    padding: 0;
+    transition:
+        background 0.15s ease,
+        transform 0.08s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+.tb-width:hover {
+    background: var(--tb-hover);
+    transform: translateY(-1px);
+}
+.tb-width.active {
+    background: var(--tb-active);
+    border-color: var(--tb-primary);
+    box-shadow: inset 0 0 0 1px var(--tb-primary-weak);
+}
+
+/* 내부에 실제 선 미리보기 */
+.tb-width::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    top: 50%;
+    height: 0;
+    border-top: 2px solid var(--tb-text);
+    transform: translateY(-50%);
+}
+.tb-width[data-width='1']::after {
+    border-top-width: 1px;
+}
+.tb-width[data-width='2']::after {
+    border-top-width: 2px;
+}
+.tb-width[data-width='3']::after {
+    border-top-width: 3px;
+}
+.tb-width[data-width='4']::after {
+    border-top-width: 4px;
+}
+.tb-width[data-width='6']::after {
+    border-top-width: 6px;
+}
+.tb-width[data-width='8']::after {
+    border-top-width: 8px;
+}
+.tb-width[data-width='12']::after {
+    border-top-width: 12px;
+}
+.tb-width[data-width='16']::after {
+    border-top-width: 16px;
+}
+.tb-width[data-width='24']::after {
+    border-top-width: 24px;
+}
+.tb-width[data-width='32']::after {
+    border-top-width: 32px;
+}
+.tb-width[data-width='64']::after {
+    border-top-width: 64px;
+}
+
+/* 숫자 인풋 공통 */
+.tb-number {
+    width: 72px;
+    height: 30px;
+    padding: 0 8px;
+    border-radius: 8px;
+    border: 1px solid var(--tb-border);
+    background: transparent;
+    color: var(--tb-text);
+    font: 500 13px/1 var(--tb-font);
+}
+
+/* 라벨 열 */
+.toolbar-field-label {
+    min-width: 44px;
+    color: var(--tb-muted);
+    font: 600 12px/1 var(--tb-font);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+/* 한 줄 레이아웃 */
+.toolbar-row {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 확대/회전 그룹 */
+.zoom-group,
+.rotation-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.zoom-group .tb-btn,
+.rotation-group .tb-btn {
+    min-width: 32px;
+    height: 30px;
+    padding: 0 10px;
+}
+
+/* 포커스 가시성 */
+.tb-btn:focus-visible,
+.tb-swatch:focus-visible,
+.tb-number:focus-visible,
+.tb-color-input:focus-visible {
+    outline: 2px solid var(--tb-primary);
+    outline-offset: 2px;
+}
+
+/* 스크롤 컨테이너에 들어갈 상황 대비 */
+.toolbar-wrap::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+}
+.toolbar-wrap::-webkit-scrollbar-thumb {
+    background: var(--tb-border);
+    border-radius: 10px;
 }

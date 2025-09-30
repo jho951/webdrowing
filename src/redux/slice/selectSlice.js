@@ -8,45 +8,47 @@ import { MODE } from '../../constant/mode';
 import { SELECT } from '../../constant/select';
 
 const initialState = {
-  mode: MODE.GLOBAL_NULL,
-  marquee: null,
-  selectedIds: [],
-  options: {
-    dashed: true,
-    handleSize: 8,
-    showBounds: true,
-  },
+    mode: MODE.GLOBAL_NULL,
+    marquee: null,
+    selectedIds: [],
+    options: {
+        dashed: true,
+        handleSize: 8,
+        showBounds: true,
+    },
 };
 
 const selectSlice = createSlice({
-  name: SELECT.SELECT_TYPE,
-  initialState,
-  reducers: {
-    setMarquee(state, action) {
-      state.marquee = action.payload;
+    name: SELECT.SELECT_TYPE,
+    initialState,
+    reducers: {
+        setMarquee(state, action) {
+            state.marquee = action.payload;
+        },
+        setSelectedIds(state, action) {
+            state.selectedIds = action.payload;
+        },
+        clearSelection(state) {
+            state.marquee = null;
+            state.selectedIds = [];
+        },
+        setSelectOptions(state, action) {
+            state.options = { ...state.options, ...action.payload };
+        },
     },
-    setSelectedIds(state, action) {
-      state.selectedIds = action.payload;
+    extraReducers: (builder) => {
+        builder.addCase(setMode, (state, { payload }) => {
+            state.mode =
+                payload === SELECT.SELECT_TYPE
+                    ? SELECT.SELECT_TYPE
+                    : MODE.GLOBAL_NULL;
+            if (state.mode === SELECT.SELECT_TYPE) state.marquee = null;
+        });
     },
-    clearSelection(state) {
-      state.marquee = null;
-      state.selectedIds = [];
-    },
-    setSelectOptions(state, action) {
-      state.options = { ...state.options, ...action.payload };
-    },
-  },
-  extraReducers: (builder) => {
-    builder.addCase(setMode, (state, { payload }) => {
-      state.mode =
-        payload === SELECT.SELECT_TYPE ? SELECT.SELECT_TYPE : MODE.GLOBAL_NULL;
-      if (state.mode === SELECT.SELECT_TYPE) state.marquee = null;
-    });
-  },
 });
 
 export const { setMarquee, setSelectedIds, clearSelection, setSelectOptions } =
-  selectSlice.actions;
+    selectSlice.actions;
 
 export default selectSlice.reducer;
 

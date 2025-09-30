@@ -6,22 +6,16 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { MODE } from '../../constant/mode';
 
-/**
- * @description 초기값
- */
 const initialState = { active: MODE.INITIAL_MODE };
 
-/**
- * @description 그리기 모드 변경
- */
 const modeSlice = createSlice({
-  name: 'mode',
-  initialState,
-  reducers: {
-    setMode(state, action) {
-      state.active = action.payload;
+    name: 'mode',
+    initialState,
+    reducers: {
+        setMode(state, action) {
+            state.active = MODE.getMode(action.payload);
+        },
     },
-  },
 });
 
 export const { setMode } = modeSlice.actions;

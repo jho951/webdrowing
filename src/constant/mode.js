@@ -1,17 +1,34 @@
+/**
+ * @file constant/mode.js
+ * @description 전역 모드 상수
+ */
 import { deepFreeze } from '../util/deep-freeze';
-import { TOOL } from './tool';
 
-const GLOBAL_NULL = 'idle';
+const INITIAL_MODE = 'tool';
 
+// 전역 모드 목록
 const MODES = deepFreeze([
-  TOOL.TOOL_TYPE,
-  'shape',
-  'text',
-  'select',
-  'image',
-  GLOBAL_NULL,
+    INITIAL_MODE,
+    'shape',
+    'text',
+    'select',
+    'image',
+    'idle',
 ]);
 
-const isMode = (mode) => MODE.some((ele) => ele === mode);
+// 전역 null 대체값 (비활성 상태를 의미) — 슬라이스에서 사용 중
+const GLOBAL_NULL = 'idle';
 
-export const MODE = { MODES, isMode, GLOBAL_NULL };
+// 유효 모드인지 검사
+const isMode = (mode) => MODES.some((m) => m === mode);
+
+// 유효하면 그대로, 아니면 GLOBAL_NULL 반환
+const getMode = (mode) => (isMode(mode) ? mode : GLOBAL_NULL);
+
+export const MODE = {
+    INITIAL_MODE,
+    MODES,
+    GLOBAL_NULL,
+    isMode,
+    getMode,
+};
