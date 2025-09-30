@@ -1,13 +1,19 @@
-/**
- * @file history.js
- * @author YJH
- */
-const DEFAULT_LIMIT = 10;
+const UNDO = 'history/UNDO';
+const REDO = 'history/REDO';
+const undo = () => ({ type: UNDO });
+const redo = () => ({ type: REDO });
 
-const STATE = {
-  canvas: null,
-  ctx: null,
-  index: -1,
-};
+const HISTORY_TRACK_TARGET = new Set([
+  'shape/addShape',
+  'text/addTextBox',
+  'text/updateTextBox',
+  'image/placeImage',
+  'bitmap/commitBitmap',
+  'style/setStrokeColor',
+  'style/setStrokeWidth',
+  'style/setStrokeDash',
+  'style/setFillColor',
+  'style/setFillOpacity',
+]);
 
-export const HISTORY = { DEFAULT_LIMIT, STATE };
+export const history = { undo, redo, HISTORY_TRACK_TARGET };

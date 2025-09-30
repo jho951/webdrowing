@@ -10,8 +10,8 @@ import { SHAPE } from '../../constant/shape';
 
 const initialState = {
   mode: MODE.GLOBAL_NULL,
-  value: null, // 'rect'|'ellipse'|'line'|'curve'|null
-  items: [], // [{ id, type, ...geometry, transform }]
+  value: null,
+  items: [],
 };
 
 const shapeSlice = createSlice({

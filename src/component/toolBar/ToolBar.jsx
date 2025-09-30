@@ -20,8 +20,6 @@ import { dispatchFromCatalogItem, dispatchFromShortcut } from './dispatcher';
 
 export default function Toolbar() {
   const dispatch = useDispatch();
-
-  // 전역 모드 & 현재 활성 값
   const mode = useSelector(selectGlobalMode);
   const tool = useSelector(selectActiveTool);
   const shape = useSelector(selectActiveShape);

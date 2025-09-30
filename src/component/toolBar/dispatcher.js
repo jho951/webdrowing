@@ -1,3 +1,4 @@
+import { useDispatch } from 'react-redux';
 import { IMAGE } from '../../constant/image';
 import { SELECT } from '../../constant/select';
 import { SHAPE } from '../../constant/shape';
@@ -10,9 +11,9 @@ import { setTool } from '../../redux/slice/toolSlice';
 
 /**
  * 카탈로그 아이템에 맞춰 모드/값/스타일 프리셋까지 적용
- * - 스타일 프리셋을 카탈로그에 두지 않는다면 hydrateFromCatalog는 생략 가능
  */
-export function dispatchFromCatalogItem(dispatch, item) {
+export function DispatchFromCatalogItem(item) {
+  const dispatch = useDispatch();
   const { type, mode, payload, defaults } = item;
 
   // (선택) 프리셋이 있다면 스타일에 주입

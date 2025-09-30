@@ -15,7 +15,7 @@ const TEXTS = deepFreeze([
     mode: TEXT_TYPE,
     payload: 'textbox',
     name: '텍스트',
-    icon: TEXT_TYPE,
+    icon: 'text',
     shortcut: 'T',
     cursor: 'text',
     fonts: [
