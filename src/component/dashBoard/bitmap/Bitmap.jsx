@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { setupCanvas } from '../../../util/setup-canvas';
+import { setupCanvas } from '../../../util/canvas-helper';
 import {
     pushPastBitmap,
     clearBitmapHistory,

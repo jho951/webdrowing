@@ -2,18 +2,11 @@
  * @file Overlay.jsx
  * @description 오버레이: 비트맵/벡터 프리뷰 + 텍스트 생성/편집(드래그 후만 생성)
  */
-import {
-    useRef,
-    useLayoutEffect,
-    useMemo,
-    useState,
-    useEffect,
-    useCallback,
-} from 'react';
+import { useRef, useLayoutEffect, useMemo, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { setupCanvas } from '../../../util/setup-canvas';
+import { setupCanvas } from '../../../util/canvas-helper';
 import { useBitmap } from '../../../hook/useBitmap';
 import { useVector } from '../../../hook/useVector';
 
@@ -27,27 +20,24 @@ import {
 } from '../../../redux/slice/shapeSlice';
 import { selectEffectiveStyle } from '../../../redux/slice/styleSlice';
 
-import { getCanvasPosition } from '../../../util/get-canvas-position';
-import { getOverlayDesign } from '../../../util/get-overlay-design';
+import { getCanvasPosition } from '../../../util/canvas-helper';
 
-const uid = () =>
-    `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+import TextArea from '../../textarea/Textarea';
+import {
+    getOverlayDesign,
+    hitTestTextShapes,
+} from '../../../util/overlay-helper';
+import { getId } from '../../../util/get-id';
+
+import {
+    beginStroke,
+    endStroke,
+    bitmapHistoryOnResize,
+} from '../../../util/get-history';
 
 const DRAG_THRESHOLD = 6;
-// ✅ 최소 크기 강제 (작게 뜨는 문제 방지)
 const MIN_W = 120;
 const MIN_H = 40;
-
-function hitTestTextShapes(items, p) {
-    if (!Array.isArray(items)) return null;
-    for (let i = items.length - 1; i >= 0; i--) {
-        const it = items[i];
-        if (it?.type !== 'text') continue;
-        const { x, y, w, h } = it;
-        if (p.x >= x && p.x <= x + w && p.y >= y && p.y <= y + h) return it;
-    }
-    return null;
-}
 
 function Overlay({ canvasRef, bitmapCanvasRef, bitmapCtxRef, vectorCtxRef }) {
     const dispatch = useDispatch();
@@ -79,11 +69,16 @@ function Overlay({ canvasRef, bitmapCanvasRef, bitmapCtxRef, vectorCtxRef }) {
             smoothing: true,
             preserve: false,
             maxDpr: 3,
+            observeDevicePixelRatio: true,
+            onResize: () => {
+                const bctx = bitmapCtxRef?.current;
+                if (bctx) bitmapHistoryOnResize(bctx);
+            },
         });
         overlayCtxRef.current = ctx;
         teardownRef.current = teardown;
         return () => teardownRef.current?.();
-    }, [canvasRef]);
+    }, [canvasRef, bitmapCtxRef]);
 
     const bm = useBitmap(bitmapCanvasRef, bitmapCtxRef, {
         tool: activeTool,
@@ -99,15 +94,15 @@ function Overlay({ canvasRef, bitmapCanvasRef, bitmapCtxRef, vectorCtxRef }) {
         fillEnabled,
     });
 
-    const [textRect, setTextRect] = useState(null); // {x,y,w,h}
+    const [textRect, setTextRect] = useState(null);
     const [showEditor, setShowEditor] = useState(false);
-    const [editingTarget, setEditingTarget] = useState(null); // 편집 대상
+    const [editingTarget, setEditingTarget] = useState(null);
 
     const textDragRef = useRef({
         drawing: false,
         moved: false,
         start: null,
-        mode: 'create', // 'create' | 'edit'
+        mode: 'create',
     });
 
     const clearOverlay = useCallback(() => {
@@ -152,7 +147,6 @@ function Overlay({ canvasRef, bitmapCanvasRef, bitmapCtxRef, vectorCtxRef }) {
             const hit = hitTestTextShapes(vecItems, p);
 
             if (hit) {
-                // 편집: 시작점을 기존 좌상단으로 고정
                 setEditingTarget(hit);
                 setShowEditor(false);
                 setTextRect(null);
@@ -165,7 +159,6 @@ function Overlay({ canvasRef, bitmapCanvasRef, bitmapCtxRef, vectorCtxRef }) {
                 return;
             }
 
-            // 생성
             setEditingTarget(null);
             setShowEditor(false);
             setTextRect(null);
@@ -215,14 +208,12 @@ function Overlay({ canvasRef, bitmapCanvasRef, bitmapCtxRef, vectorCtxRef }) {
             let w = Math.abs(p.x - start.x);
             let h = Math.abs(p.y - start.y);
 
-            // ✅ 최소 크기 강제
             w = Math.max(MIN_W, Math.round(w));
             h = Math.max(MIN_H, Math.round(h));
 
             clearOverlay();
             setTextRect({ x, y, w, h });
             setShowEditor(true);
-            // 편집 모드면 editingTarget 유지 → initialText로 사용
         },
         [clearOverlay]
     );
@@ -235,7 +226,6 @@ function Overlay({ canvasRef, bitmapCanvasRef, bitmapCtxRef, vectorCtxRef }) {
             if (e?.cancelable) e.preventDefault();
 
             if (!textDragRef.current.moved) {
-                // 클릭으로만 끝나면 아무 것도 열지 않음
                 textDragRef.current = {
                     drawing: false,
                     moved: false,
@@ -255,12 +245,11 @@ function Overlay({ canvasRef, bitmapCanvasRef, bitmapCtxRef, vectorCtxRef }) {
     const onTextPointerLeave = onTextPointerUp;
     const onTextPointerCancel = onTextPointerUp;
 
-    // textarea 포털
     const hostEl = canvasRef.current?.parentElement || null;
     const editorPortal =
         showEditor && textRect && hostEl
             ? createPortal(
-                  <TextEditor
+                  <TextArea
                       rect={textRect}
                       initialText={editingTarget?.text || ''}
                       stylePreset={eff?.text}
@@ -273,7 +262,6 @@ function Overlay({ canvasRef, bitmapCanvasRef, bitmapCtxRef, vectorCtxRef }) {
                           const typed = (payload.text ?? '').trim();
 
                           if (editingTarget?.id) {
-                              // ✅ 편집: 입력 비었으면 기존 텍스트 유지, 사이즈/위치만 갱신
                               const nextText =
                                   typed.length === 0
                                       ? editingTarget.text
@@ -292,7 +280,6 @@ function Overlay({ canvasRef, bitmapCanvasRef, bitmapCtxRef, vectorCtxRef }) {
                                   })
                               );
                           } else {
-                              // ✅ 생성: 입력 비었으면 생성 취소(아무 것도 추가 안 함)
                               if (typed.length === 0) {
                                   setShowEditor(false);
                                   setTextRect(null);
@@ -301,7 +288,7 @@ function Overlay({ canvasRef, bitmapCanvasRef, bitmapCtxRef, vectorCtxRef }) {
                               }
                               dispatch(
                                   addShape({
-                                      id: uid(),
+                                      id: getId(),
                                       type: 'text',
                                       x: payload.rect.x,
                                       y: payload.rect.y,
@@ -322,18 +309,33 @@ function Overlay({ canvasRef, bitmapCanvasRef, bitmapCtxRef, vectorCtxRef }) {
               )
             : null;
 
-    // 모드별 바인딩
     const isBitmapTool =
         mode === 'tool' && (activeTool === 'brush' || activeTool === 'eraser');
 
     const bind = useMemo(() => {
         if (isBitmapTool) {
             return {
-                onPointerDown: bm.onPointerDown,
+                onPointerDown: (e) => {
+                    const ctx = bitmapCtxRef?.current;
+                    if (ctx) beginStroke(ctx);
+                    bm.onPointerDown(e);
+                },
                 onPointerMove: bm.onPointerMove,
-                onPointerUp: bm.onPointerUp,
-                onPointerLeave: bm.onPointerLeave,
-                onPointerCancel: bm.onPointerCancel,
+                onPointerUp: (e) => {
+                    bm.onPointerUp(e);
+                    const ctx = bitmapCtxRef?.current;
+                    if (ctx) endStroke(ctx);
+                },
+                onPointerLeave: (e) => {
+                    bm.onPointerLeave(e);
+                    const ctx = bitmapCtxRef?.current;
+                    if (ctx) endStroke(ctx);
+                },
+                onPointerCancel: (e) => {
+                    bm.onPointerCancel(e);
+                    const ctx = bitmapCtxRef?.current;
+                    if (ctx) endStroke(ctx);
+                },
             };
         }
         if (mode === 'text') {
@@ -357,6 +359,7 @@ function Overlay({ canvasRef, bitmapCanvasRef, bitmapCtxRef, vectorCtxRef }) {
         isBitmapTool,
         bm,
         vec,
+        bitmapCtxRef,
         onTextPointerDown,
         onTextPointerMove,
         onTextPointerUp,
@@ -373,109 +376,3 @@ function Overlay({ canvasRef, bitmapCanvasRef, bitmapCtxRef, vectorCtxRef }) {
 }
 
 export default Overlay;
-
-/** ===== 내부: textarea (바깥 클릭/블러/단축키로 확정) ===== */
-function TextEditor({
-    rect,
-    initialText = '',
-    onClose,
-    onCommit,
-    stylePreset,
-}) {
-    const taRef = useRef(null);
-    const committedRef = useRef(false);
-
-    useEffect(() => {
-        if (taRef.current) {
-            taRef.current.value = initialText;
-            taRef.current.focus();
-        }
-    }, [initialText]);
-
-    const commit = useCallback(() => {
-        if (committedRef.current) return;
-        committedRef.current = true;
-        const text = taRef.current?.value ?? '';
-        onCommit?.({
-            text,
-            rect: { ...rect },
-            style: {
-                color: stylePreset?.color,
-                fontFamily: stylePreset?.fontFamily,
-                fontSize: stylePreset?.fontSize,
-                fontWeight: stylePreset?.fontWeight,
-                lineHeight: stylePreset?.lineHeight,
-                letterSpacing: stylePreset?.letterSpacing,
-                align: stylePreset?.align,
-                underline: stylePreset?.underline,
-                italic: stylePreset?.italic,
-            },
-        });
-    }, [rect, onCommit, stylePreset]);
-
-    const cancel = useCallback(() => {
-        committedRef.current = true;
-        onClose?.();
-    }, [onClose]);
-
-    const onKeyDown = (e) => {
-        if (e.key === 'Escape') {
-            e.preventDefault();
-            cancel();
-        }
-        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'enter') {
-            e.preventDefault();
-            commit();
-        }
-    };
-
-    useEffect(() => {
-        const onDocPointerDown = (ev) => {
-            const el = taRef.current;
-            if (!el) return;
-            if (ev.target === el || el.contains(ev.target)) return;
-            commit();
-        };
-        document.addEventListener('pointerdown', onDocPointerDown, true);
-        return () =>
-            document.removeEventListener('pointerdown', onDocPointerDown, true);
-    }, [commit]);
-
-    return (
-        <textarea
-            ref={taRef}
-            className="overlay-textarea"
-            style={{
-                position: 'absolute',
-                left: `${rect.x}px`,
-                top: `${rect.y}px`,
-                width: `${Math.max(MIN_W, rect.w)}px`,
-                height: `${Math.max(MIN_H, rect.h)}px`,
-                margin: 0,
-                padding: '6px 8px',
-                border: '1px solid rgba(0,0,0,0.2)',
-                outline: 'none',
-                background: 'rgba(255,255,255,0.95)',
-                resize: 'both',
-                overflow: 'auto',
-                zIndex: 1000,
-                color: stylePreset?.color || '#000',
-                fontFamily:
-                    stylePreset?.fontFamily ||
-                    'Pretendard, system-ui, sans-serif',
-                fontSize: stylePreset?.fontSize
-                    ? `${stylePreset.fontSize}px`
-                    : '16px',
-                fontWeight: stylePreset?.fontWeight || '400',
-                lineHeight: stylePreset?.lineHeight || 1.5,
-                letterSpacing: stylePreset?.letterSpacing
-                    ? `${stylePreset.letterSpacing}px`
-                    : 0,
-                textAlign: stylePreset?.align || 'left',
-            }}
-            placeholder="텍스트 입력… (Esc: 취소, ⌘/Ctrl+Enter: 확정)"
-            onKeyDown={onKeyDown}
-            onBlur={commit}
-        />
-    );
-}

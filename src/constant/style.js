@@ -7,8 +7,6 @@ import { deepFreeze } from '../util/deep-freeze';
 
 const STYLE_TYPE = 'style';
 
-const pct = (v) => `${Math.round(v * 100)}%`;
-
 /**
  * 색상
  */

@@ -6,11 +6,6 @@ import { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { selectGlobalMode } from '../../redux/slice/modeSlice';
-
-// ✅ ops 경로에서 가져오세요 (slice 아님)
-import { undoBitmap, redoBitmap } from '../../util/get-bitmap-undo-redo';
-import { undoVector, redoVector } from '../../util/get-vector-undo-redo';
-
 import {
     canUndoBitmap as selCanUndoBmp,
     canRedoBitmap as selCanRedoBmp,
@@ -18,14 +13,28 @@ import {
     canRedoVector as selCanRedoVec,
 } from '../../redux/slice/historySlice';
 
-function HistoryBtn({ bitmapCtxRef, className = '' }) {
+import { undoVector, redoVector } from '../../util/get-vector-undo-redo';
+import {
+    undoBitmap as thunkUndoBitmap,
+    redoBitmap as thunkRedoBitmap,
+} from '../../util/get-bitmap-undo-redo';
+
+/**
+ * @param {object} props
+ * @param {object|null} props.bitmapApi - useBitmap(...) 반환값(undo/redo/canUndo/canRedo 포함)
+ * @param {object|null} props.bitmapCtxRef - 훅 API가 없을 때 폴백용 2D 컨텍스트 ref
+ */
+function HistoryBtn({ bitmapApi = null, bitmapCtxRef = null, className = '' }) {
     const dispatch = useDispatch();
     const mode = useSelector(selectGlobalMode);
 
-    const canUndoBmp = useSelector(selCanUndoBmp);
-    const canRedoBmp = useSelector(selCanRedoBmp);
+    const canUndoBmpStore = useSelector(selCanUndoBmp);
+    const canRedoBmpStore = useSelector(selCanRedoBmp);
     const canUndoVec = useSelector(selCanUndoVec);
     const canRedoVec = useSelector(selCanRedoVec);
+
+    const canUndoBmp = (bitmapApi?.canUndo ?? canUndoBmpStore) || false;
+    const canRedoBmp = (bitmapApi?.canRedo ?? canRedoBmpStore) || false;
 
     const isVectorMode = mode === 'shape' || mode === 'text';
     const canUndoAny = isVectorMode
@@ -36,26 +45,54 @@ function HistoryBtn({ bitmapCtxRef, className = '' }) {
         : canRedoBmp || canRedoVec;
 
     const doUndo = useCallback(() => {
-        const ctx = bitmapCtxRef?.current || null;
         if (isVectorMode) {
             if (canUndoVec) return dispatch(undoVector());
-            if (canUndoBmp && ctx) return dispatch(undoBitmap(ctx));
+            if (canUndoBmp) {
+                if (bitmapApi?.undo) return bitmapApi.undo();
+                const ctx = bitmapCtxRef?.current ?? null;
+                if (ctx) return dispatch(thunkUndoBitmap(ctx));
+            }
         } else {
-            if (canUndoBmp && ctx) return dispatch(undoBitmap(ctx));
+            if (canUndoBmp) {
+                if (bitmapApi?.undo) return bitmapApi.undo();
+                const ctx = bitmapCtxRef?.current ?? null;
+                if (ctx) return dispatch(thunkUndoBitmap(ctx));
+            }
             if (canUndoVec) return dispatch(undoVector());
         }
-    }, [dispatch, isVectorMode, canUndoVec, canUndoBmp, bitmapCtxRef]);
+    }, [
+        dispatch,
+        isVectorMode,
+        canUndoVec,
+        canUndoBmp,
+        bitmapApi,
+        bitmapCtxRef,
+    ]);
 
     const doRedo = useCallback(() => {
-        const ctx = bitmapCtxRef?.current || null;
         if (isVectorMode) {
             if (canRedoVec) return dispatch(redoVector());
-            if (canRedoBmp && ctx) return dispatch(redoBitmap(ctx));
+            if (canRedoBmp) {
+                if (bitmapApi?.redo) return bitmapApi.redo();
+                const ctx = bitmapCtxRef?.current ?? null;
+                if (ctx) return dispatch(thunkRedoBitmap(ctx));
+            }
         } else {
-            if (canRedoBmp && ctx) return dispatch(redoBitmap(ctx));
+            if (canRedoBmp) {
+                if (bitmapApi?.redo) return bitmapApi.redo();
+                const ctx = bitmapCtxRef?.current ?? null;
+                if (ctx) return dispatch(thunkRedoBitmap(ctx));
+            }
             if (canRedoVec) return dispatch(redoVector());
         }
-    }, [dispatch, isVectorMode, canRedoVec, canRedoBmp, bitmapCtxRef]);
+    }, [
+        dispatch,
+        isVectorMode,
+        canRedoVec,
+        canRedoBmp,
+        bitmapApi,
+        bitmapCtxRef,
+    ]);
 
     useEffect(() => {
         const onKeyDown = (e) => {
@@ -77,7 +114,7 @@ function HistoryBtn({ bitmapCtxRef, className = '' }) {
                     e.preventDefault();
                     doUndo();
                 }
-            } else if (k === 'z' && e.shiftKey) {
+            } else if ((k === 'z' && e.shiftKey) || k === 'y') {
                 if (canRedoAny) {
                     e.preventDefault();
                     doRedo();
@@ -94,15 +131,19 @@ function HistoryBtn({ bitmapCtxRef, className = '' }) {
                 onClick={doUndo}
                 disabled={!canUndoAny}
                 className="history-btn"
+                aria-label="Undo (Ctrl/⌘+Z)"
+                title="Undo (Ctrl/⌘+Z)"
             >
-                ⟲ Undo
+                Undo
             </button>
             <button
                 onClick={doRedo}
                 disabled={!canRedoAny}
                 className="history-btn"
+                aria-label="Redo (Ctrl/⌘+Shift+Z or Ctrl+Y)"
+                title="Redo (Ctrl/⌘+Shift+Z or Ctrl+Y)"
             >
-                ⟳ Redo
+                Redo
             </button>
         </section>
     );

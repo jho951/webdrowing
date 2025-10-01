@@ -48,7 +48,7 @@ const initialState = {
 };
 
 const styleSlice = createSlice({
-    name: STYLE.STYLE_TYPE,
+    name: 'style',
     initialState,
     reducers: {
         setStrokeColor(state, action) {

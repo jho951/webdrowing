@@ -1,17 +1,16 @@
 /**
  * @file dispatcher.js
+ * @author YJH
  * @description 카탈로그 아이템 클릭/단축키를 Redux 액션으로 변환
  */
-
 import { setMode } from '../redux/slice/modeSlice';
-import { setTool } from '../redux/slice/toolSlice'; // ⬅️ setActiveTool → setTool
+import { setTool } from '../redux/slice/toolSlice';
 import { setShape } from '../redux/slice/shapeSlice';
 import { hydrateFromCatalog } from '../redux/slice/styleSlice';
 
 import { TOOL } from '../constant/tool';
 import { SHAPE } from '../constant/shape';
 import { TEXT } from '../constant/text';
-import { IMAGE } from '../constant/image';
 import { SELECT } from '../constant/select';
 
 /**
@@ -23,8 +22,8 @@ export function dispatchFromCatalogItem(dispatch, item) {
     if (!item || !item.type) return;
 
     if (item.type === TOOL.TOOL_TYPE) {
-        dispatch(setMode(TOOL.TOOL_TYPE)); // 'tool'
-        dispatch(setTool(item.payload)); // ⬅️ setActiveTool 대신 setTool
+        dispatch(setMode(TOOL.TOOL_TYPE));
+        dispatch(setTool(item.payload));
         if (item.defaults) {
             dispatch(
                 hydrateFromCatalog({
@@ -37,7 +36,7 @@ export function dispatchFromCatalogItem(dispatch, item) {
     }
 
     if (item.type === SHAPE.SHAPE_TYPE) {
-        dispatch(setMode(SHAPE.SHAPE_TYPE)); // 'shape'
+        dispatch(setMode(SHAPE.SHAPE_TYPE));
         dispatch(setShape(item.payload));
         if (item.defaults) {
             dispatch(
@@ -51,7 +50,7 @@ export function dispatchFromCatalogItem(dispatch, item) {
     }
 
     if (item.type === TEXT.TEXT_TYPE) {
-        dispatch(setMode(TEXT.TEXT_TYPE)); // 'text'
+        dispatch(setMode(TEXT.TEXT_TYPE));
         if (item.defaults) {
             dispatch(
                 hydrateFromCatalog({
@@ -63,21 +62,8 @@ export function dispatchFromCatalogItem(dispatch, item) {
         return;
     }
 
-    if (item.type === IMAGE.IMAGE_TYPE) {
-        dispatch(setMode(IMAGE.IMAGE_TYPE)); // 'image'
-        if (item.defaults) {
-            dispatch(
-                hydrateFromCatalog({
-                    mode: IMAGE.IMAGE_TYPE,
-                    defaults: item.defaults,
-                })
-            );
-        }
-        return;
-    }
-
     if (item.type === SELECT.SELECT_TYPE) {
-        dispatch(setMode(SELECT.SELECT_TYPE)); // 'select'
+        dispatch(setMode(SELECT.SELECT_TYPE));
         if (item.defaults) {
             dispatch(
                 hydrateFromCatalog({

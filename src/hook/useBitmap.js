@@ -17,7 +17,7 @@ import {
     canRedoBitmap as selCanRedo,
 } from '../redux/slice/historySlice';
 import { commitBitmap } from '../redux/slice/bitmapSlice';
-import { getCanvasPosition } from '../util/get-canvas-position';
+import { getCanvasPosition } from '../util/canvas-helper';
 import { ToolMap } from '../feature/tool';
 
 export function useBitmap(

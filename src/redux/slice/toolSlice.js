@@ -1,7 +1,8 @@
 /**
  * @file toolSlice.js
  * @author YJH
- * @description 비트맵 도구(붓/지우개) 상태
+ * @description
+ * - 비트맵 도구(붓/지우개) 상태
  */
 import { createSlice } from '@reduxjs/toolkit';
 import { setMode } from './modeSlice';
@@ -14,7 +15,7 @@ const initialState = {
 };
 
 const toolSlice = createSlice({
-    name: TOOL.TOOL_TYPE,
+    name: 'tool',
     initialState,
     reducers: {
         setTool(state, action) {
@@ -39,5 +40,4 @@ export default toolSlice.reducer;
 
 export const selectToolState = (s) => s.tool;
 export const selectToolMode = (s) => s.tool.mode;
-export const selectActiveTool = (s) =>
-    s.tool.mode === TOOL.TOOL_TYPE ? s.tool.value : null;
+export const selectActiveTool = (s) => s.tool.value;

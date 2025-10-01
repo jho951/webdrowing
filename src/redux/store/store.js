@@ -9,7 +9,9 @@ import selectReducer from '../slice/selectSlice';
 import imageReducer from '../slice/imageSlice';
 import sizeReducer from '../slice/sizeSlice';
 import shapeReducer from '../slice/shapeSlice';
-import buildAppMiddleware from '../middleware/middleware';
+
+import historyVectorReducer from '../slice/vectorSlice';
+import { historyVectorMiddleware } from '../middleware/historymiddleware';
 
 const store = configureStore({
     reducer: {
@@ -23,9 +25,12 @@ const store = configureStore({
         image: imageReducer,
         size: sizeReducer,
         shape: shapeReducer,
+        historyVector: historyVectorReducer,
     },
-    middleware: (getDefaultMiddleware) =>
-        buildAppMiddleware(getDefaultMiddleware),
+    middleware: (getDefault) =>
+        getDefault({ serializableCheck: false }).concat(
+            historyVectorMiddleware
+        ),
 });
 
 export default store;

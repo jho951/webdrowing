@@ -3,7 +3,7 @@
  * @description 오버레이(가벼운 프리뷰/가이드) 훅
  */
 
-import { getCanvasPosition } from '../util/get-canvas-position';
+import { getCanvasPosition } from '../util/canvas-helper';
 
 function useOverlay(canvasRef, ctxRef, { mode, bitmapRef }) {
     function clear(ctx, canvas) {

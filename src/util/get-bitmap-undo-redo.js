@@ -1,87 +1,73 @@
-// src/util/get-bitmap-undo-redo.js
+/**
+ * @file get-bitmap-undo-redo.js
+ * @description 비트맵(ImageData 기반) undo/redo 유틸 (툴바 버튼 폴백 경로)
+ */
 import {
-    pushFutureBitmap,
     pushPastBitmap,
+    pushFutureBitmap,
     popPastBitmap,
     popFutureBitmap,
 } from '../redux/slice/historySlice';
 import { commitBitmap } from '../redux/slice/bitmapSlice';
 
-/** 현재 캔버스 픽셀 스냅샷 */
-function capture(ctx) {
-    const c = ctx?.canvas;
-    if (!ctx || !c) return null;
-    return ctx.getImageData(0, 0, c.width, c.height);
-}
-
-/** 스냅샷을 캔버스에 복원 */
-function drawSnapshot(ctx, img) {
-    if (!ctx || !img) return;
-    const c = ctx.canvas;
-    const sameSize = img.width === c.width && img.height === c.height;
-
-    ctx.save();
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    if (!sameSize) {
-        // 크기 다르면 임시 캔버스에 putImageData → drawImage로 스케일 복원
-        const tmp = document.createElement('canvas');
-        tmp.width = img.width;
-        tmp.height = img.height;
-        tmp.getContext('2d').putImageData(img, 0, 0);
-        ctx.clearRect(0, 0, c.width, c.height);
-        ctx.drawImage(
-            tmp,
-            0,
-            0,
-            img.width,
-            img.height,
-            0,
-            0,
-            c.width,
-            c.height
-        );
-    } else {
-        ctx.putImageData(img, 0, 0);
-    }
-    ctx.restore();
+/**
+ * 현재 캔버스를 ImageData로 스냅샷
+ */
+function captureImageData(ctx) {
+    if (!ctx) return null;
+    return ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
 /**
- * Undo (Bitmap) — thunk creator
- * @param {CanvasRenderingContext2D} ctx
+ * ImageData를 캔버스에 복원
  */
-export const undoBitmap = (ctx) => (dispatch, getState) => {
-    if (!ctx) return;
-    const past = getState()?.history?.bitmap?.past || [];
-    if (past.length === 0) return;
-
-    const cur = capture(ctx);
-    if (cur) dispatch(pushFutureBitmap({ snapshot: cur }));
-
-    const prevEntry = past[past.length - 1];
-    const prev = prevEntry?.snapshot ?? prevEntry;
-
-    dispatch(popPastBitmap());
-    drawSnapshot(ctx, prev);
-    dispatch(commitBitmap({ snapshot: prev }));
-};
+function restoreImageData(ctx, imageData) {
+    if (!ctx || !imageData) return;
+    ctx.putImageData(imageData, 0, 0);
+}
 
 /**
- * Redo (Bitmap) — thunk creator
- * @param {CanvasRenderingContext2D} ctx
+ * Undo: past의 마지막을 복원하고, 현재 프레임을 future로 보존
  */
-export const redoBitmap = (ctx) => (dispatch, getState) => {
-    if (!ctx) return;
-    const future = getState()?.history?.bitmap?.future || [];
-    if (future.length === 0) return;
+export function undoBitmap(ctx) {
+    return (dispatch, getState) => {
+        if (!ctx) return;
 
-    const cur = capture(ctx);
-    if (cur) dispatch(pushPastBitmap({ snapshot: cur }));
+        const state = getState();
+        const past = state?.history?.bitmap?.past || [];
+        if (past.length === 0) return;
 
-    const nextEntry = future[future.length - 1];
-    const next = nextEntry?.snapshot ?? nextEntry;
+        const cur = captureImageData(ctx);
+        if (cur) dispatch(pushFutureBitmap({ snapshot: cur }));
 
-    dispatch(popFutureBitmap());
-    drawSnapshot(ctx, next);
-    dispatch(commitBitmap({ snapshot: next }));
-};
+        const prevEntry = past[past.length - 1];
+        const prev = prevEntry?.snapshot ?? prevEntry;
+
+        dispatch(popPastBitmap());
+        restoreImageData(ctx, prev);
+        dispatch(commitBitmap({ snapshot: prev }));
+    };
+}
+
+/**
+ * Redo: future의 마지막을 복원하고, 현재 프레임을 past로 보존
+ */
+export function redoBitmap(ctx) {
+    return (dispatch, getState) => {
+        if (!ctx) return;
+
+        const state = getState();
+        const future = state?.history?.bitmap?.future || [];
+        if (future.length === 0) return;
+
+        const cur = captureImageData(ctx);
+        if (cur) dispatch(pushPastBitmap({ snapshot: cur }));
+
+        const nextEntry = future[future.length - 1];
+        const next = nextEntry?.snapshot ?? nextEntry;
+
+        dispatch(popFutureBitmap());
+        restoreImageData(ctx, next);
+        dispatch(commitBitmap({ snapshot: next }));
+    };
+}

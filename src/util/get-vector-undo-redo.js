@@ -1,46 +1,62 @@
-// src/util/get-vector-undo-redo.js
+/**
+ * @file get-vector-undo-redo.js
+ * @description 벡터(도형) 전용 undo/redo thunk와 스냅샷 헬퍼 (historySlice의 pushPast/popPast 이름에 맞춤)
+ */
 import {
-    pushFutureVector,
     pushPastVector,
+    pushFutureVector,
     popPastVector,
     popFutureVector,
+    selectVectorPastTop,
+    selectVectorFutureTop,
 } from '../redux/slice/historySlice';
-import { setShapes } from '../redux/slice/shapeSlice';
 
-const deepCopy = (v) => JSON.parse(JSON.stringify(v || []));
+import { selectVectorItems, setShapes } from '../redux/slice/shapeSlice';
 
-/** 변경 직전 상태를 past에 저장 (도형/텍스트 확정 직전에 호출) */
-export const captureVector = () => (dispatch, getState) => {
-    const items = getState()?.shape?.items || [];
-    dispatch(pushPastVector({ snapshot: deepCopy(items) }));
-};
+// 깊은 복사(구현 간단 버전)
+const clone = (x) =>
+    typeof structuredClone === 'function'
+        ? structuredClone(x)
+        : JSON.parse(JSON.stringify(x));
 
-export const undoVector = () => (dispatch, getState) => {
-    const state = getState();
-    const past = state?.history?.vector?.past || [];
-    if (past.length === 0) return;
+// 드로잉/변형 1동작 끝날 때 past에 스냅샷 푸시
+export function commitVectorSnapshot() {
+    return (dispatch, getState) => {
+        const items = selectVectorItems(getState()) || [];
+        dispatch(pushPastVector(clone(items)));
+    };
+}
 
-    const cur = deepCopy(state?.shape?.items || []);
-    dispatch(pushFutureVector({ snapshot: cur }));
+// Undo
+export function undoVector() {
+    return (dispatch, getState) => {
+        const state = getState();
+        const top = selectVectorPastTop(state);
+        if (!top) return;
 
-    const prevEntry = past[past.length - 1];
-    const prev = prevEntry?.snapshot ?? prevEntry;
+        // 현재 상태를 future에 저장
+        const cur = selectVectorItems(state) || [];
+        dispatch(pushFutureVector(clone(cur)));
 
-    dispatch(popPastVector());
-    dispatch(setShapes(Array.isArray(prev) ? prev : []));
-};
+        // past pop → 복원
+        dispatch(popPastVector());
+        dispatch(setShapes(clone(top)));
+    };
+}
 
-export const redoVector = () => (dispatch, getState) => {
-    const state = getState();
-    const future = state?.history?.vector?.future || [];
-    if (future.length === 0) return;
+// Redo
+export function redoVector() {
+    return (dispatch, getState) => {
+        const state = getState();
+        const top = selectVectorFutureTop(state);
+        if (!top) return;
 
-    const cur = deepCopy(state?.shape?.items || []);
-    dispatch(pushPastVector({ snapshot: cur }));
+        // 현재 상태를 past에 저장
+        const cur = selectVectorItems(state) || [];
+        dispatch(pushPastVector(clone(cur)));
 
-    const nextEntry = future[future.length - 1];
-    const next = nextEntry?.snapshot ?? nextEntry;
-
-    dispatch(popFutureVector());
-    dispatch(setShapes(Array.isArray(next) ? next : []));
-};
+        // future pop → 복원
+        dispatch(popFutureVector());
+        dispatch(setShapes(clone(top)));
+    };
+}

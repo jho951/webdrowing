@@ -14,7 +14,7 @@ const initialState = {
 };
 
 const textSlice = createSlice({
-    name: TEXT.TEXT_TYPE,
+    name: 'text',
     initialState,
     reducers: {
         addTextBox(state, action) {

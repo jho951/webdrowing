@@ -1,10 +1,21 @@
+/**
+ * @file DashBoard.jsx
+ * @author YJH
+ */
 import { useRef } from 'react';
 import Bitmap from './bitmap/Bitmap';
 import Vector from './vector/Vector';
 import Overlay from './overlay/Overlay';
+
 import './dashboard.css';
 import Toolbar from '../toolbar/ToolBar';
 
+/**
+ * @function DashBoard
+ * @description
+ * - 3중 레이어로 비트맵, 벡타, 오버레이
+ * @returns {canvas}
+ */
 function DashBoard() {
     const bitmapRef = useRef(null);
     const bitmapCtxRef = useRef(null);
@@ -14,6 +25,7 @@ function DashBoard() {
 
     return (
         <>
+            <Toolbar bitmapCtxRef={bitmapCtxRef} />
             <section className="dashboard">
                 <Bitmap
                     canvasRef={bitmapRef}

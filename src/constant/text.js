@@ -7,6 +7,9 @@ import { deepFreeze } from '../util/deep-freeze';
 import { getId } from '../util/get-id';
 
 const TEXT_TYPE = 'text';
+const DRAG_THRESHOLD = 6;
+const MIN_W = 120;
+const MIN_H = 40;
 
 const TEXTS = deepFreeze([
     {
@@ -29,4 +32,4 @@ const TEXTS = deepFreeze([
     },
 ]);
 
-export const TEXT = { TEXT_TYPE, TEXTS };
+export const TEXT = { DRAG_THRESHOLD, MIN_W, MIN_H, TEXT_TYPE, TEXTS };

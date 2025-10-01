@@ -15,14 +15,12 @@
 
 import { useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { getCanvasPosition } from '../util/get-canvas-position';
+import { getCanvasPosition } from '../util/canvas-helper';
 import { SHAPE_FEATURE } from '../feature/shape';
-import { getOverlayDesign } from '../util/get-overlay-design';
-import { addShape } from '../redux/slice/shapeSlice';
 
-// 간단한 ID 유틸
-const uid = () =>
-    `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+import { addShape } from '../redux/slice/shapeSlice';
+import { getOverlayDesign } from '../util/overlay-helper';
+import { getId } from '../util/get-id';
 
 export function useVector(
     previewCanvasRef, // overlay canvas
@@ -33,7 +31,7 @@ export function useVector(
         strokeColor = '#000',
         strokeWidth = 2,
         fillColor = 'transparent',
-        fillEnabled = false, // 기본은 채우기 꺼짐
+        fillEnabled = false,
     } = {}
 ) {
     const dispatch = useDispatch();
@@ -110,13 +108,12 @@ export function useVector(
             return;
         }
 
-        // ✅ 확정 시: Redux에만 저장 → Vector 컴포넌트가 상태 기반 재그리기
         if (result?.shape) {
             const base = {
-                id: uid(),
-                ...result.shape, // type/좌표/선색/굵기 등
+                id: getId(),
+                ...result.shape,
             };
-            // 채우기는 옵션일 때만
+
             const shape =
                 fillEnabled && fillColor && fillColor !== 'transparent'
                     ? { ...base, fill: fillColor }
